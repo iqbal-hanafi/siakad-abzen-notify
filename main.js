@@ -14,7 +14,7 @@ app.get('/cekabsen/:nim/:pw', async (req, res) => {
   if(msg === 'invalid')
     return res.send('invalid password atau username')
   if(msg !== ''){
-    msg = `silahkan absen\n*${msg}*`
+    msg = `*ABSEN ALERT*\nsilahkan absen\n*${msg}*`
     await wa(msg, gcid)
   }
   return res.send(msg)
