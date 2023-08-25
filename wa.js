@@ -29,12 +29,11 @@ async function connectToWhatsApp (msg='', group_id='') {
                  connectToWhatsApp(msg, group_id)
            else return console.log('eror tidak bisa loging')
        }else if(connection === 'open'){
-         var users = (await sock.groupMetadata(group_id)).participants
-         if(users){
-            users = users.map(x => x.id).filter(x => !sock.user.id.includes(x.split('@')[0]))
-            sock.sendMessage(group_id, {text: msg, mentions: users})
-         }
+         var users = (await sock.groupMetadata(group_id)).participants.map(x => x.id).filter(x => !sock.user.id.includes(x.split('@')[0]))
+         console.log(users)
+         sock.sendMessage(group_id, {text: msg, mentions: users})
          sock.ev.removeAllListeners()
+      
        }
     })
 }
