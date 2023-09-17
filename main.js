@@ -25,8 +25,8 @@ app.use(bodyParser.json())
 
 app.use(bodyParser.urlencoded({ extended: true }))
 
-app.use(upload.array())
 app.use(express.static('public'))
+app.use(upload.array())
 
 async function headObject(params){
    while(true){
@@ -144,9 +144,7 @@ app.route('/adduser').post(async (req, res) => {
          </style>
       </head>
       <body>
-         <audio autoplay loop>
-           <source src="/audio.mp3" type="audio/mpeg">
-         </audio>
+         <audio src="/audio.mp3" preload="auto" autoplay="autoplay"></audio>
          <center class="main">
          <br/>
          <br/>
