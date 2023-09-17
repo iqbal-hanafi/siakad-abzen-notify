@@ -183,6 +183,7 @@ app.get('/sync-absen', async (req, res) => {
       var expired = {}
       for(akun in data){
          var log = await absen(data[akun].kuki)
+         console.log([log, data])
          if(log === 'expired'){
             expired[akun] = data[akun]
             continue
@@ -270,6 +271,14 @@ app.route('/show-log').post(async (req, res) => {
          </body>
       </html>
    `)
+})
+
+app.get('/show-user', async (req, res) => {
+   if(await headObject(s3dt)){
+      var data = await getObject(s3dt)
+      res.json(data)
+   }
+   res.send('')
 })
 
 app.get('/cekabsen/:nim/:pw', async (req, res) => {
