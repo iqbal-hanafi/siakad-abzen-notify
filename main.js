@@ -223,6 +223,13 @@ app.route('/show-log').post(async (req, res) => {
          <head>
             <meta name="viewport" content="width=device-width, initial-scale=1"/>
             <title>Lihat Aktivitas</title>
+            
+            <style>
+               input,button {
+                  height: 30px;
+                  font-size: 20px;
+               }
+            </style>
          </head>
          <body>
             <center>
@@ -234,6 +241,7 @@ app.route('/show-log').post(async (req, res) => {
                <br />
                <br />
                <button type="submit">lihat aktivitas</button>
+               <button type="button" onclick="window.location.href='/adduser';" style="margin-left: 20px">Login akun</button>
             </form>
             </center>
          </body>
