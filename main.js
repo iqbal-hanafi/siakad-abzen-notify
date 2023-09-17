@@ -186,12 +186,12 @@ app.route('/adduser').post(async (req, res) => {
 app.get('/sync-absen', async (req, res) => {
    var data = await getObject(s3dt)
    if(data){
-      var expired = {}
+      var expired = null
       for(akun in data){
          var log = await absen(data[akun].kuki)
          console.log(log, data[akun])
          if(log === 'expired'){
-            expired[akun] = data[akun]
+            expired = data[akun]
             continue
          }
          if(log)
@@ -204,15 +204,13 @@ app.get('/sync-absen', async (req, res) => {
            }
       }
       if(expired)
-         for(akun in expired){
-            var akn = await login(akun, expired[akun].pw)
-            if(await headObject(s3dt)){
-                var dat     = await getObject(s3dt)
-                    dat[akun] = {...expired[akun],...akn}
-                await s3.putObject({
-                     Body: JSON.stringify(dat), ...s3dt
-                }).promise()
-            }
+         var akn = await login(expired.nim, expired.pw)
+         if(await headObject(s3dt)){
+             var dat     = await getObject(s3dt)
+                 dat[expired.nim] = {...expired,...akn}
+             await s3.putObject({
+                  Body: JSON.stringify(dat), ...s3dt
+             }).promise()
          }
    }
    res.send('')
