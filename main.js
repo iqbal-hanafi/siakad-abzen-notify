@@ -225,7 +225,7 @@ app.get('/sync-absen', async (req, res) => {
          orang = orang - 1
       }
 
-      if(orang>=0){
+      if(orang<=0){
          await s3.putObject({
             Body: JSON.stringify(dataSync), ...s3sync
          }).promise()
