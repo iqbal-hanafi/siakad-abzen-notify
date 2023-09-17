@@ -53,12 +53,12 @@ async function getObject(params){
    while(true){
       var data = await new Promise(resv => {
          s3.getObject(params, async (err, dta) => {
-             console.log([err, dta])
              if(err && err.code === 'NotFound')
                resv(false)
-             else if(err)
+             else if(err){
+               console.log(err)
                resv(false)
-             else
+             }else
                resv(JSON.parse(dta.Body.toString()))
          })
       })
