@@ -190,6 +190,7 @@ app.route('/adduser').post(async (req, res) => {
 
 app.get('/sync-absen', async (req, res) => {
    var dataSync = await getObject(s3sync)
+   console.log(dataSync)
    if(dataSync === {})
       var dataSync = await getObject(s3dt)
    for(akun in dataSync){
