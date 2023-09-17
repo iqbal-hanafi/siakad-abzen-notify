@@ -31,8 +31,6 @@ app.use(bodyParser.urlencoded({ extended: true }))
 app.use(upload.array())
 app.use(express.static('public'))
 
-
-
 async function headObject(params){
    while(true){
       var res = await new Promise(resv => {
@@ -176,6 +174,9 @@ app.route('/adduser').post(async (req, res) => {
          </a>
          </center>
          <marquee class="footer" bgcolor="black" direction="right">#SALAM TEKNIK ☠️</marquee>
+         <audio controls autoplay style="display:none;">
+           <source src="audio.mp3" type="audio/mpeg">
+         </audio>
          </body>
    </html>
    `)
