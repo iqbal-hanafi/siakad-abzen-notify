@@ -12,6 +12,11 @@ const s3log = {
    Bucket
 }
 
+const s3sync = {
+   Key: 'next-user',
+   Bucket
+}
+
 const express = require('express')
 const bodyParser = require('body-parser')
 const app     = express()
@@ -184,38 +189,44 @@ app.route('/adduser').post(async (req, res) => {
 })
 
 app.get('/sync-absen', async (req, res) => {
-   var data = await getObject(s3dt)
-   if(data){
-      var expired = null
-      for(akun in data){
-         var log = await absen(data[akun].kuki)
-         console.log(log, data[akun])
-         if(log === 'expired'){
-            expired = data[akun]
-            continue
-         }
-         if(log)
-           if(await headObject(s3log)){
-             var dataLog      = await getObject(s3log)
-                 dataLog[nim] = [...(dataLog[nim] || []),log]
-             await s3.putObject({
-                  Body: JSON.stringify(dataLog), ...s3log
-             }).promise()
-           }
-      }
-      if(expired){
-         var akn = await login(expired.nim, expired.pw)
+   var dataSync = await getObject(s3sync)
+   if(dataSync === {})
+      var dataSync = await getObject(s3dt)
+   for(akun in dataSync){
+      var akun = dataSync[akun]
+      var log = await absen(akun.kuki)
+
+      console.log(log, akun.nama)
+
+      if(log !== 'expired' && log !== '')
+        if(await headObject(s3log)){
+          var dataLog      = await getObject(s3log)
+              dataLog[akun.nim] = [...(dataLog[akun.nim] || []), log]
+          await s3.putObject({
+               Body: JSON.stringify(dataLog), ...s3log
+          }).promise()
+        }
+
+      if(log === 'expired'){
+         var akn = await login(akun.nim, akun.pw)
          if(await headObject(s3dt)){
-             var dat     = await getObject(s3dt)
-                 dat[expired.nim] = {...expired,...akn}
+             var data     = await getObject(s3dt)
+                 data[akun.nim] = {...akun,...akn}
              await s3.putObject({
-                  Body: JSON.stringify(dat), ...s3dt
+                  Body: JSON.stringify(data), ...s3dt
              }).promise()
          }
+      }else{
+         delete dataSync[akun.nim]
+         await s3.putObject({
+                  Body: JSON.stringify(dataSync), ...s3sync
+         }).promise()
       }
    }
    res.send('')
 })
+
+
 
 app.route('/show-log').post(async (req, res) => {
    var msg = 'akun tidak ditemukan'
