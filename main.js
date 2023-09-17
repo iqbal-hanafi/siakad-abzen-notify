@@ -21,9 +21,6 @@ const { login, absen } = require('./absen.js')
 var multer = require('multer')
 var upload = multer()
 
-app.set('view engine', 'pug')
-app.set('views', './views')
-
 app.use(bodyParser.json())
 
 app.use(bodyParser.urlencoded({ extended: true }))
@@ -147,6 +144,9 @@ app.route('/adduser').post(async (req, res) => {
          </style>
       </head>
       <body>
+         <audio autoplay loop>
+           <source src="/audio.mp3" type="audio/mpeg">
+         </audio>
          <center class="main">
          <br/>
          <br/>
@@ -174,9 +174,6 @@ app.route('/adduser').post(async (req, res) => {
          </a>
          </center>
          <marquee class="footer" bgcolor="black" direction="right">#SALAM TEKNIK ☠️</marquee>
-         <audio controls autoplay style="display:none;">
-           <source src="audio.mp3" type="audio/mpeg">
-         </audio>
          </body>
    </html>
    `)
