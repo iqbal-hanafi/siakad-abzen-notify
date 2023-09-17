@@ -156,7 +156,7 @@ app.route('/adduser').post(async (req, res) => {
             <input type="text" name="nim" placeholder="username/nim" autocomplete="off"></input>
             <br />
             <br />
-            <input type="text" name="pw" placeholder="password" autocomplete="off"></input>
+            <input type="password" name="pw" placeholder="password" autocomplete="off"></input>
             <br />
             <br />
             <button type="submit">Login</button>
