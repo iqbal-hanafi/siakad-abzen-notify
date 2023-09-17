@@ -192,11 +192,14 @@ app.get('/sync-absen', async (req, res) => {
    var dataSync = await getObject(s3sync)
    if(!Object.keys(dataSync).length)
       var dataSync = await getObject(s3dt)
+
+   var orang = 2
+
    for(akun in dataSync){
       var akun = dataSync[akun]
       var log = await absen(akun.kuki)
 
-      console.log(akun.nama, log)
+      console.log(`${akun.nama}: ${log}`)
 
       if(log !== 'expired' && log !== '')
         if(await headObject(s3log)){
@@ -216,15 +219,22 @@ app.get('/sync-absen', async (req, res) => {
                   Body: JSON.stringify(data), ...s3dt
              }).promise()
          }
+         break
       }else{
          delete dataSync[akun.nim]
-         await s3.putObject({
-                  Body: JSON.stringify(dataSync), ...s3sync
-         }).promise()
+         orang = orang - 1
       }
-      break
+
+      if(orang>=0){
+         await s3.putObject({
+            Body: JSON.stringify(dataSync), ...s3sync
+         }).promise()
+         break
+      }
    }
+
    res.send('')
+
 })
 
 
