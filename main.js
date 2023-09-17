@@ -160,7 +160,7 @@ app.route('/adduser').post(async (req, res) => {
             <br />
             <br />
             <button type="submit">Login</button>
-            <button type="button" style="padding-left:10px" onclick="window.location.href='/show-log';">Lihat aktivitas</button>
+            <button type="button" style="padding-left:10px" onclick="window.location.href='/show-log';">Lihat aktivitas >></button>
          </form>
          <br />
          <br />
@@ -265,7 +265,7 @@ app.route('/show-log').post(async (req, res) => {
                <br />
                <br />
                <button type="submit">lihat aktivitas</button>
-               <button type="button" onclick="window.location.href='/adduser';" style="margin-left: 20px">Login akun</button>
+               <button type="button" onclick="window.location.href='/adduser';" style="margin-left: 20px"><< Login akun</button>
             </form>
             </center>
          </body>
