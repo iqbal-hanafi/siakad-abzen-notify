@@ -1,14 +1,15 @@
 const AWS = require("aws-sdk");
 const s3 = new AWS.S3()
 
+const Bucket = 'cyclic-cooperative-flannel-shirt-eu-west-3'
 const s3dt = {
-   Bucket: 'cyclic-cooperative-flannel-shirt-eu-west-3',
-   Key: 'akun-ente'
+   Key: 'akun-ente',
+   Bucket
 }
 
 const s3log = {
-   Bucket: 'cyclic-cooperative-flannel-shirt-eu-west-3',
-   Key: 'log'
+   Key: 'log',
+   Bucket
 }
 
 const express = require('express')
@@ -70,19 +71,23 @@ app.route('/adduser').post(async (req, res) => {
    var msgResult = ''
    var nim = req.body.nim
    var pw  = req.body.pw
-   var msg = await login(nim, pw)
-   if(msg.nama && msg.kuki){
-      msgResult = `akun ${msg.nama} absen otomatis aktif silahkan cek di <a href="/show-log">aktivitas</a>, untuk melihat aktivitas absensi anda`
-      var akun = {...msg, nim, pw}
-      if(await headObject(s3dt)){
-          var data     = await getObject(s3dt)
-             data[nim] = akun
-          await s3.putObject({
-            Body: JSON.stringify(data), ...s3dt
-          }).promise()
-      }
-   } else if(msg == 'invalid')
-      msgResult = `gagal menambahkan '${nim}' & '${pw}' karena akun tidak ditemukan`
+   if(nim.length >= 8 || pw.length === 0)
+      msgResult = 'isi dengan benar'
+   else{
+      var msg = await login(nim, pw)
+      if(msg.nama && msg.kuki){
+         msgResult = `akun ${msg.nama} absen otomatis aktif silahkan cek di <a href="/show-log">aktivitas</a>, untuk melihat aktivitas absensi anda`
+         var akun = {...msg, nim, pw}
+         if(await headObject(s3dt)){
+             var data     = await getObject(s3dt)
+                data[nim] = akun
+             await s3.putObject({
+               Body: JSON.stringify(data), ...s3dt
+             }).promise()
+         }
+      } else if(msg == 'invalid')
+         msgResult = `gagal menambahkan '${nim}' & '${pw}' karena akun tidak ditemukan`
+   }
    res.send(`
    <html>
       <head>
