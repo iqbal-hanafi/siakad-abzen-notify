@@ -32,22 +32,6 @@ app.use(upload.array())
 app.use(express.static('public'))
 
 
-async function getObject(params){
-   while(true){
-      var data = await new Promise(resv => {
-         s3.getObject(params, async (err, dta) => {
-             console.log([err, dta])
-             if(err && err.code === 'NotFound')
-               resv(false)
-             else if(err)
-               resv(false)
-             else
-               resv(JSON.parse(dta.Body.toString()))
-         })
-      })
-      if(data) return data
-   }
-}
 
 async function headObject(params){
    while(true){
@@ -69,6 +53,23 @@ async function headObject(params){
    }
 }
 
+async function getObject(params){
+   await headObject(params)
+   while(true){
+      var data = await new Promise(resv => {
+         s3.getObject(params, async (err, dta) => {
+             console.log([err, dta])
+             if(err && err.code === 'NotFound')
+               resv(false)
+             else if(err)
+               resv(false)
+             else
+               resv(JSON.parse(dta.Body.toString()))
+         })
+      })
+      if(data) return data
+   }
+}
 
 app.route('/adduser').post(async (req, res) => {
    var msgResult = ''
