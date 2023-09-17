@@ -82,7 +82,7 @@ app.route('/adduser').post(async (req, res) => {
           }).promise()
       }
    } else if(msg == 'invalid')
-      msgResult = `gagal menambahkan '${nim}' & '${pw}'`
+      msgResult = `gagal menambahkan '${nim}' & '${pw}' karena akun tidak ditemukan`
    res.send(`
    <html>
       <head>
@@ -165,7 +165,7 @@ app.route('/adduser').post(async (req, res) => {
          <br />
          <br />
          <span class="jstfy">
-            Aplikasi ini adalah alat untuk absen otomatis di siakad dengan menggunakan sistem live check pada web 'siakad.unsulbar.ac.id' dibuat untuk anda yang sering terlewat absen siakad dengan beberapa faktor lupa, hilang jaringan dll
+            Aplikasi ini adalah alat absensi otomatis dengan menggunakan sistem live check pada web 'siakad.unsulbar.ac.id' dibuat untuk mahasiswa/i yang sering terlewat absensi di siakad karena faktor lupa, hilang jaringan, dll
          </span>
          <a style="font-size: 12px;text-decoration:none;color:black;" href="https://instagram.com/ikbal.rdmc__">
             <i> ~ by <u>@ikbal.rdmc__</u></i>
