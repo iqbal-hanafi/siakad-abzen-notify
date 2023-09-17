@@ -23,6 +23,8 @@ async function absen(kuki){
    })
    return await new Promise((resv)=>{
       absenreq.get(`${URL}/mahasiswa/jadwal`, async (e,r,b)=>{
+         if(!b.includes('Logout'))
+            return resv('expired')
          var msg = '';
          for(id of parse(b).querySelectorAll('[data-id*="unsulbar"]')){
             id = id.getAttribute('data-id')

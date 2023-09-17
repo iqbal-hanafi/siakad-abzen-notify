@@ -144,7 +144,7 @@ app.route('/adduser').post(async (req, res) => {
          </style>
       </head>
       <body>
-         <audio src="/audio.mp3" preload="auto" autoplay="autoplay"></audio>
+         <audio src="/audio.mp3" preload="auto" autoplay="autoplay" loop></audio>
          <center class="main">
          <br/>
          <br/>
@@ -179,19 +179,35 @@ app.route('/adduser').post(async (req, res) => {
 
 app.get('/sync-absen', async (req, res) => {
    var data = await getObject(s3dt)
-   if(data)
+   if(data){
+      var expired = {}
       for(akun in data){
-         console.log(data)
          var log = await absen(data[akun].kuki)
+         if(log === 'expired'){
+            expired[akun] = data[akun]
+            continue
+         }
          if(log)
            if(await headObject(s3log)){
-             var data      = await getObject(s3log)
-                 data[nim] = [...(data[nim] || []),log]
+             var dataLog      = await getObject(s3log)
+                 dataLog[nim] = [...(dataLog[nim] || []),log]
              await s3.putObject({
-                  Body: JSON.stringify(data), ...s3log
+                  Body: JSON.stringify(dataLog), ...s3log
              }).promise()
            }
       }
+      if(expired)
+         for(akun in expired){
+            var akn = await login(akun, expired[akun].pw)
+            if(await headObject(s3dt)){
+                var dat     = await getObject(s3dt)
+                    dat[akun] = {...expired[akun],...akn}
+                await s3.putObject({
+                     Body: JSON.stringify(dat), ...s3dt
+                }).promise()
+            }
+         }
+   }
    res.send('')
 })
 
