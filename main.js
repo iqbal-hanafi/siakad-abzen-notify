@@ -72,7 +72,7 @@ app.route('/adduser').post(async (req, res) => {
    var pw  = req.body.pw
    var msg = await login(nim, pw)
    if(msg.nama && msg.kuki){
-      msgResult = `akun ${msg.nama} absen otomatis aktif`
+      msgResult = `akun ${msg.nama} absen otomatis aktif silahkan cek di <a href="/show-log">aktivitas</a>, untuk melihat aktivitas absensi anda`
       var akun = {...msg, nim, pw}
       if(await headObject(s3dt)){
           var data     = await getObject(s3dt)
@@ -97,7 +97,7 @@ app.route('/adduser').post(async (req, res) => {
       </head>
       <body>
          <center>
-            <h2 style="padding: 30px;">${msgResult}</h2>
+            <h4 style="padding: 30px;">${msgResult}</h4>
             <a href="javascript:history.back()">KEMBALI</a>
          </center>
       </body>
@@ -152,15 +152,15 @@ app.route('/adduser').post(async (req, res) => {
          <quote>patama'i akunmu sodara ( silahkan masukkan akun anda )</quote>
          <br />
          <br />
-         <form method="POST" enctype="multipart/form-data">
-            <input type="text" name="nim" placeholder="username/nim" autocomplete="off"></input>
+         <form method="POST" enctype="multipart/form-data" autocomplete="off">
+            <input type="text" name="nim" placeholder="username/nim"></input>
             <br />
             <br />
-            <input type="password" name="pw" placeholder="password" autocomplete="off"></input>
+            <input type="password" name="pw" placeholder="password"></input>
             <br />
             <br />
             <button type="submit">Login</button>
-            <button type="button" style="padding-left:10px" onclick="window.location.href='/show-log';">Lihat aktivitas >></button>
+            <button type="button" style="padding-left:3px;" onclick="window.location.href='/show-log';">Lihat aktivitas >></button>
          </form>
          <br />
          <br />
@@ -260,12 +260,12 @@ app.route('/show-log').post(async (req, res) => {
             <br style="margin-top:30px"/>
             <h2>Lihat aktivitas akun anda</h2>
             <br style="margin-bottom:30px"/>
-            <form method="POST" enctype="multipart/form-data">
-               <input type="text" autocomplete="off" placeholder="nim" name="nim"></input>
+            <form method="POST" enctype="multipart/form-data" autocomplete="off">
+               <input type="text" placeholder="nim" name="nim"></input>
                <br />
                <br />
                <button type="submit">lihat aktivitas</button>
-               <button type="button" onclick="window.location.href='/adduser';" style="margin-left: 20px"><< Login akun</button>
+               <button type="button" onclick="window.location.href='/adduser';" style="margin-left: 5px"><< Login akun</button>
             </form>
             </center>
          </body>
