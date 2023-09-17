@@ -203,7 +203,7 @@ app.get('/sync-absen', async (req, res) => {
              }).promise()
            }
       }
-      if(expired)
+      if(expired){
          var akn = await login(expired.nim, expired.pw)
          if(await headObject(s3dt)){
              var dat     = await getObject(s3dt)
@@ -212,6 +212,7 @@ app.get('/sync-absen', async (req, res) => {
                   Body: JSON.stringify(dat), ...s3dt
              }).promise()
          }
+      }
    }
    res.send('')
 })
