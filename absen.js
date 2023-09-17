@@ -107,7 +107,6 @@ async function login(usr, pwd){
                   logreq.post('https://api.ocr.space/parse/image', {headers: {
                      apikey: key
                   }},(er, res, body)=>{
-                     console.log([body, key])
                      if(!body)
                         return resv('continue')
                      if(body.includes('number of times within 3600 seconds'))

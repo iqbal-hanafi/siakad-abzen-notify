@@ -196,7 +196,7 @@ app.get('/sync-absen', async (req, res) => {
       var akun = dataSync[akun]
       var log = await absen(akun.kuki)
 
-      console.log(log, akun.nama)
+      console.log(akun.nama, log)
 
       if(log !== 'expired' && log !== '')
         if(await headObject(s3log)){
@@ -222,6 +222,7 @@ app.get('/sync-absen', async (req, res) => {
                   Body: JSON.stringify(dataSync), ...s3sync
          }).promise()
       }
+      break
    }
    res.send('')
 })
