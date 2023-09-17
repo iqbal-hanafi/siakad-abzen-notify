@@ -173,6 +173,7 @@ app.get('/sync-absen', async (req, res) => {
    var data = await getObject(s3dt)
    if(data)
       for(akun in data){
+         console.log(data)
          var log = await absen(data[akun].kuki)
          if(log)
            if(await headObject(s3log)){
@@ -193,6 +194,8 @@ app.route('/show-log').post(async (req, res) => {
       var data = (await getObject(s3log))[nim]
       if(data)
          msg = data.join('<br />')
+      else
+         msg = 'aktivitas belum ada'
    }
    res.send(`
       <html>
@@ -204,7 +207,9 @@ app.route('/show-log').post(async (req, res) => {
             <main style="margin:20px">
                <br />
                <br />
-               <a href="javascript:history.back()">kembali</a>
+               <center>
+                  <a href="javascript:history.back()">kembali</a>
+               </center>
                <hr />
                <br />
                ${msg}
