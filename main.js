@@ -50,20 +50,21 @@ async function headObject(params){
 }
 
 async function getObject(params){
-   await headObject(params)
-   while(true){
-      var data = await new Promise(resv => {
-         s3.getObject(params, async (err, dta) => {
-             if(err && err.code === 'NotFound')
-               resv(false)
-             else if(err){
-               console.log(err)
-               resv(false)
-             }else
-               resv(JSON.parse(dta.Body.toString()))
+   if(await headObject(params)){
+      while(true){
+         var data = await new Promise(resv => {
+            s3.getObject(params, async (err, dta) => {
+                if(err && err.code === 'NotFound')
+                  resv(false)
+                else if(err){
+                  console.log(err)
+                  resv(false)
+                }else
+                  resv(JSON.parse(dta.Body.toString()))
+            })
          })
-      })
-      if(data) return data
+         if(data) return data
+     }
    }
 }
 
@@ -188,7 +189,7 @@ app.get('/sync-absen', async (req, res) => {
       var expired = {}
       for(akun in data){
          var log = await absen(data[akun].kuki)
-         console.log([log, data])
+         console.log(log, data[akun])
          if(log === 'expired'){
             expired[akun] = data[akun]
             continue
