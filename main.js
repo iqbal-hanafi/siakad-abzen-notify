@@ -215,13 +215,9 @@ app.get('/sync-absen', async (req, res) => {
          if(await headObject(s3dt)){
              var data     = await getObject(s3dt)
                  data[akun.nim] = {...akun,...akn}
+                 dataSync[akun.nim] = {...akun,...akn}
              await s3.putObject({
                   Body: JSON.stringify(data), ...s3dt
-             }).promise()
-             var dataSync1 = await getObject(s3sync)
-                 dataSync1[akun.nim] = {...akun,...akn}
-             await s3.putObject({
-                  Body: JSON.stringify(dataSync1), ...s3sync
              }).promise()
          }
          break
