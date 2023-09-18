@@ -327,7 +327,7 @@ app.get('/', async (req, res) => {
       var dataLogt = await getObject(s3logt)
       if(dataLogt.data)
          for(dt of dataLogt.data)
-            msg += `<li>${dt.nama} - ${dt.log} - ${dt.time}</li><br />`
+            msg += `<li>${dt.nama} - ${dt.log} - [ ${dt.time} ]</li><br />`
    }
    res.send(`
    <html>
