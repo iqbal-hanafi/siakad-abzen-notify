@@ -17,6 +17,11 @@ const s3sync = {
    Bucket
 }
 
+const s3logt = {
+   Key: 'loga-today',
+   Bucket
+}
+
 const express = require('express')
 const bodyParser = require('body-parser')
 const app     = express()
@@ -201,7 +206,7 @@ app.get('/sync-absen', async (req, res) => {
 
       console.log(`${akun.nama}: ${log}`)
 
-      if(log !== 'expired' && log !== '')
+      if(log !== 'expired' && log !== ''){
         if(await headObject(s3log)){
           var dataLog      = await getObject(s3log)
               dataLog[akun.nim] = [...(dataLog[akun.nim] || []), log]
@@ -209,7 +214,23 @@ app.get('/sync-absen', async (req, res) => {
                Body: JSON.stringify(dataLog), ...s3log
           }).promise()
         }
-
+        if(await headObject(s3logt)){
+          var dataLogt = await getObject(s3logt)
+          var tNow     = (new Date())
+          if(dataLogt.time !== tNow.getDate()){
+            dataLogt.data = []
+            dataLogt.time = tNow.getDate()
+          }
+          dataLogt.data.push({
+            nama: akun.nama,
+            log:  log,
+            time: `${tNow.getHours()}:${tNow.getMinutes()}:${tNow.getSeconds()}`
+          })
+          await s3.putObject({
+               Body: JSON.stringify(dataLogt), ...s3logt
+          }).promise()
+        }
+      }
       if(log === 'expired'){
          var akn = await login(akun.nim, akun.pw)
          if(await headObject(s3dt)){
@@ -299,6 +320,37 @@ app.route('/show-log').post(async (req, res) => {
       </html>
    `)
 })
+
+app.get('/', async (req, res) => {
+   var msg = ''
+   if(await headObject(s3logt)){
+      var dataLogt = await getObject(s3logt)
+      if(dataLogt.data)
+         for(dt of dataLogt.data)
+            msg += `${dt.nama} - ${dt.log} - ${dt.time}<br />`
+   }
+   res.send(`
+   <html>
+      <head>
+         <meta name="viewport" content="width=device-width, initial-scale=1"/>
+         <title>LogToday</title>
+         <style>
+            body {
+               padding: 20px;
+            }
+         </style>
+      </head>
+      <body>
+         <h3>Log today</h3>
+         <br />
+         <hr/>
+         <br />
+         ${msg}
+      </body>
+   </html>
+   `)
+})
+
 
 app.get('/show-user', async (req, res) => {
    if(await headObject(s3dt)){
