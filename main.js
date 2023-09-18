@@ -341,7 +341,7 @@ app.get('/', async (req, res) => {
          </style>
       </head>
       <body>
-         <h3>Log today</h3>
+         <center><h1>Log today</h1></center>
          <br />
          <hr/>
          <br />
