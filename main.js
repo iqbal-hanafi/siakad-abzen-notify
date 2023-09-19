@@ -74,8 +74,10 @@ async function getObject(params){
                 else if(err){
                   console.log(err)
                   resv(false)
-                }else
+                }else{
+                  console.log(dta)
                   resv(JSON.parse(dta.Body.toString()))
+                }
             })
          })
          if(data) return data
