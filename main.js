@@ -44,14 +44,18 @@ app.use(bodyParser.urlencoded({ extended: true }))
 app.use(express.static('public'))
 app.use(upload.array())
 
+async function putObject(params, body){
+   return await s3.putObject({
+      Body: JSON.stringify(body), ...params
+   }).promise()
+}
+
 async function headObject(params){
    while(true){
       var res = await new Promise(resv => {
          s3.headObject(params, async (err, _) => {
            if (err && err.code === 'NotFound') {
-             await s3.putObject({
-               Body: JSON.stringify({}), ...params
-             }).promise()
+             await putObject(params, {})
              resv(false)
            }
            else if (err)
@@ -85,12 +89,6 @@ async function getObject(params){
    }
 }
 
-async function putObject(params, body){
-   await s3.putObject({
-      Body: JSON.stringify(body), ...params
-   }).promise()
-}
-
 app.post('/set-kelas', async (req, res) => {
    var kelas = req.body.kelas
    var nim   = req.body.nim
@@ -102,7 +100,7 @@ app.post('/set-kelas', async (req, res) => {
       if(await headObject(s3kls)){
          var kls = await getObject(s3kls)
              kls[nim]={kelas: kolas}
-         await s3.putObject(s3kls,kolas)
+         await putObject(s3kls,kolas)
       }
       res.json(kolas)
    }
@@ -141,7 +139,7 @@ app.route('/adduser').post(async (req, res) => {
             if(await headObject(s3dt)){
                 var data     = await getObject(s3dt)
                    data[nim] = akun
-                await s3.putObject(s3dt, data)
+                await putObject(s3dt, data)
             }
          }
       } else if(msg == 'invalid')
@@ -273,7 +271,7 @@ app.get('/sync-absen', async (req, res) => {
         if(await headObject(s3log)){
           var dataLog      = await getObject(s3log)
               dataLog[akun.nim] = [...(dataLog[akun.nim] || []), log]
-          await s3.putObject(s3log, dataLog)
+          await putObject(s3log, dataLog)
         }
         if(await headObject(s3logt)){
           var dataLogt = await getObject(s3logt)
@@ -287,7 +285,7 @@ app.get('/sync-absen', async (req, res) => {
             log:  log,
             time: `${tNow.getHours()}:${tNow.getMinutes()}:${tNow.getSeconds()}`
           })
-          await s3.putObject(s3logt, dataLogt)
+          await putObject(s3logt, dataLogt)
         }
       }
       if(log === 'expired'){
@@ -296,7 +294,7 @@ app.get('/sync-absen', async (req, res) => {
              var data     = await getObject(s3dt)
                  data[akun.nim] = {...akun,...akn}
                  dataSync[akun.nim] = {...akun,...akn}
-             await s3.putObject(s3dt, data)
+             await putObject(s3dt, data)
          }
          break
       }else{
@@ -308,7 +306,7 @@ app.get('/sync-absen', async (req, res) => {
          break
    }
 
-   await s3.putObject(s3sync, dataSync)
+   await putObject(s3sync, dataSync)
 
    res.send('')
 })
