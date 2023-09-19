@@ -111,6 +111,7 @@ app.route('/adduser').post(async (req, res) => {
          var kls  = await getKls(msg.kuki)
          msgResult = `Hallo ${msg.nama}`
          if(kls.success && kls.data !== []){
+            console.log(msg)
             var checkbox_kls = kls.data.map(x => `<input name="kelas[]" value="${escape(JSON.stringify(x))}" type="checkbox" id="${x.id}"><label for="${x.id}">${x.mk}</label></input>`).join('<br />')
             form = `
             Silahkan pilih kelas yg ingin di absen otomatis
