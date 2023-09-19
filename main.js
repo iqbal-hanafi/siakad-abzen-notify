@@ -106,8 +106,6 @@ app.route('/adduser').post(async (req, res) => {
             console.log(checkbox_kls)
             form = `
             <br />
-            <hr />
-            <br />
             <br />
             <form style="text-align: left" method="POST" action="/set-kelas" enctype="multipart/form-data">
                ${checkbox_kls}
@@ -140,7 +138,8 @@ app.route('/adduser').post(async (req, res) => {
       </head>
       <body>
          <center>
-            <h3>${msgResult}</h3>
+            <br />
+            <h2>${msgResult}</h2>
             <hr />
             <br />
             ${form}
