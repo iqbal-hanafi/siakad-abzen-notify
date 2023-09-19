@@ -92,7 +92,7 @@ app.route('/adduser').post(async (req, res) => {
    var msgResult = ''
    var nim = req.body.nim
    var pw  = req.body.pw
-   if(pw.length === 0)
+   if(!nim.length  && !pw.length)
       msgResult = 'isi dengan benar'
    else{
       var msg = await login(nim, pw)
