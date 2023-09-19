@@ -92,7 +92,7 @@ app.route('/adduser').post(async (req, res) => {
    var nim = req.body.nim
    var pw  = req.body.pw
    if(nim.length >= 8 || pw.length === 0)
-      msgResult = 'isi dengan benar'
+      form = 'isi dengan benar'
    else{
       var msg = await login(nim, pw)
       console.log(msg)
@@ -102,7 +102,7 @@ app.route('/adduser').post(async (req, res) => {
          if(kls.success && kls.data !== []){
             var checkbox_kls = kls.data.map(x => `<input name="kelas[]" value="${escape(JSON.stringify(x))}" type="checkbox" id="${x.id}"><label for="${x.id}">${x.mk}</label><br/>`)
             console.log(checkbox_kls)
-            form += `
+            form = `
             <br />
             <h3>Silahkan pilih kelas yg ingin di absen otomatis</h3>
             <hr />
@@ -123,7 +123,7 @@ app.route('/adduser').post(async (req, res) => {
             }
          }
       } else if(msg == 'invalid')
-         msgResult = `gagal menambahkan '${nim}' & '${pw}' karena akun tidak ditemukan`
+         form = `gagal menambahkan '${nim}' & '${pw}' karena akun tidak ditemukan`
    }
    res.send(`
    <html>
