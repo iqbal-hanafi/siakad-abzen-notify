@@ -95,6 +95,7 @@ app.route('/adduser').post(async (req, res) => {
       msgResult = 'isi dengan benar'
    else{
       var msg = await login(nim, pw)
+      console.log(msg)
       if(msg.nama && msg.kuki){
          var kls  = await getKls(msg.kuki)
          console.log(kls)
