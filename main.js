@@ -27,6 +27,9 @@ const s3kls = {
    Bucket
 }
 
+for(i of [s3dt, s3log, s3sync, s3logt, s3kls])
+   s3.deleteObject(i)
+
 const express = require('express')
 const bodyParser = require('body-parser')
 const app     = express()
@@ -136,6 +139,7 @@ app.route('/adduser').post(async (req, res) => {
             `
             var akun = {...msg, nim, pw}
             if(await headObject(s3dt)){
+                console.log('ok')
                 var data     = await getObject(s3dt)
                    data[nim] = akun
                    console.log('oii',data)
