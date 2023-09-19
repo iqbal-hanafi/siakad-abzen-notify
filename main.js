@@ -102,14 +102,14 @@ app.route('/adduser').post(async (req, res) => {
          console.log(kls)
          msgResult = 'Silahkan pilih kelas yg ingin di absen otomatis'
          if(kls.success && kls.data !== []){
-            var checkbox_kls = kls.data.map(x => `<input name="kelas[]" value="${escape(JSON.stringify(x))}" type="checkbox" id="${x.id}"><label for="${x.id}">${x.mk}</label><br/>`)
+            var checkbox_kls = kls.data.map(x => `<input name="kelas[]" value="${escape(JSON.stringify(x))}" type="checkbox" id="${x.id}"><label for="${x.id}">${x.mk}</label>`).join('<br />')
             console.log(checkbox_kls)
             form = `
             <br />
             <hr />
             <br />
             <br />
-            <form method="POST" action="/set-kelas" enctype="multipart/form-data">
+            <form style="text-align: left" method="POST" action="/set-kelas" enctype="multipart/form-data">
                ${checkbox_kls}
                <button type="submit">Simpan</button>
             </form>
