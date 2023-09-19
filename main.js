@@ -91,7 +91,7 @@ app.post('/set-kelas', async (req, res) => {
       var kolas = {}
       for(dt of kelas)
          kolas[dt.id] = dt.mk
-      if(await handleObject(s3kls)){
+      if(await headObject(s3kls)){
          var kls = await getObject(s3kls)
              kls[nim]={kelas: kolas}
          await s3.putObject({
