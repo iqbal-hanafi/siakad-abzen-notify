@@ -75,7 +75,7 @@ async function getObject(params){
                   console.log(err)
                   resv(false)
                 }else{
-                  console.log(dta.Body.toString())
+                  console.log('msg: ', dta.Body.toString())
                   resv(JSON.parse(dta.Body.toString()))
                 }
             })
@@ -87,8 +87,7 @@ async function getObject(params){
 
 async function putObject(params, body){
    await s3.putObject({
-      ...params,
-      Body: JSON.stringify(body)
+      Body: JSON.stringify(body), ...params
    }).promise()
 }
 
