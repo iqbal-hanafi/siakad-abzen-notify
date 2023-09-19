@@ -97,6 +97,7 @@ app.route('/adduser').post(async (req, res) => {
       var msg = await login(nim, pw)
       if(msg.nama && msg.kuki){
          var kls  = await getKls(msg.kuki)
+         console.log(kls)
          if(kls.success && kls.data !== []){
             var checkbox_kls = kls.data.map(x => `<input name="kelas[]" value="${escape(JSON.stringify(x))}" type="checkbox" id="${x.id}"><label for="${x.id}">${x.mk}</label><br/>`)
             console.log(checkbox_kls)
