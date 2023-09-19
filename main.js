@@ -120,7 +120,6 @@ app.route('/adduser').post(async (req, res) => {
          var kls  = await getKls(msg.kuki)
          msgResult = `Hallo ${msg.nama}`
          if(kls.success && kls.data !== []){
-            console.log(msg)
             var checkbox_kls = kls.data.map(x => `<label><input name="kelas[]" value="${escape(JSON.stringify(x))}" type="checkbox" id="${x.id}">${x.mk}</label>`).join('\n')
             form = `
             Silahkan pilih kelas yg ingin di absen otomatis
@@ -139,7 +138,7 @@ app.route('/adduser').post(async (req, res) => {
             if(await headObject(s3dt)){
                 var data     = await getObject(s3dt)
                    data[nim] = akun
-                            console.log(data)
+                   console.log('oii',data)
                 await putObject(s3dt, data)
             }
          }
