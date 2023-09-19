@@ -107,8 +107,9 @@ app.route('/adduser').post(async (req, res) => {
             form = `
             <br />
             <br />
-            <form style="text-align: left" method="POST" action="/set-kelas" enctype="multipart/form-data">
+            <form style="padding: 20px;text-align: left" method="POST" action="/set-kelas" enctype="multipart/form-data">
                ${checkbox_kls}
+               <br />
                <button type="submit">Simpan</button>
             </form>
             `
