@@ -84,6 +84,7 @@ async function getObject(params){
 }
 
 app.post('/set-kelas', async (req, res) => {
+   console.log(req.body)
    var kelas = req.kelas
    var nim   = req.nim
    var name  = req.name
