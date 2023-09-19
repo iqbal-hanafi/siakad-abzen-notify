@@ -95,7 +95,7 @@ app.post('/set-kelas', async (req, res) => {
          var kls = await getObject(s3kls)
              kls[nim]={kelas: kolas}
          await s3.putObject({
-            Body: JSON.stringify(kolas),...kolas
+            Body: JSON.stringify(kolas),...s3kls
          }).promise()
       }
       res.json(kolas)
