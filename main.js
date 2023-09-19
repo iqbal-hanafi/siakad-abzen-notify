@@ -139,6 +139,7 @@ app.route('/adduser').post(async (req, res) => {
             if(await headObject(s3dt)){
                 var data     = await getObject(s3dt)
                    data[nim] = akun
+                            console.log(data)
                 await putObject(s3dt, data)
             }
          }
