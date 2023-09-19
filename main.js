@@ -27,8 +27,8 @@ const s3kls = {
    Bucket
 }
 
-for(i of [s3dt, s3log, s3sync, s3logt, s3kls])
-   s3.deleteObject(i)
+//for(i of [s3dt, s3log, s3sync, s3logt, s3kls])
+//   s3.deleteObject(i)
 
 const express = require('express')
 const bodyParser = require('body-parser')
