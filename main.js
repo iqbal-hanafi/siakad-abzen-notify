@@ -105,6 +105,7 @@ app.post('/set-kelas', async (req, res) => {
       }
       res.json(kolas)
    }
+   res.json(kolas)
 })
 
 app.route('/adduser').post(async (req, res) => {
