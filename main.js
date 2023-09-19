@@ -84,7 +84,18 @@ async function getObject(params){
 }
 
 app.post('/set-kelas', async (req, res) => {
-   res.json(req.body)
+   var kelas = req.kelas
+   var nim   = req.nim
+   var name  = req.name
+   if(kelas.length !== 0){
+      kelas = kelas.map(x => JSON.parse(x))
+      console.log(kelas,nim,name)
+      /***
+      if(await handleObject(s3kls)){
+         var kls = await getObject(s3kls)
+         kls[nim]={kelas: }
+      }***/
+   }
 })
 
 app.route('/adduser').post(async (req, res) => {
@@ -96,19 +107,18 @@ app.route('/adduser').post(async (req, res) => {
       msgResult = 'isi dengan benar'
    else{
       var msg = await login(nim, pw)
-      console.log(msg)
       if(msg.nama && msg.kuki){
          var kls  = await getKls(msg.kuki)
-         console.log(kls)
          msgResult = `Hallo ${msg.nama}`
          if(kls.success && kls.data !== []){
             var checkbox_kls = kls.data.map(x => `<input name="kelas[]" value="${escape(JSON.stringify(x))}" type="checkbox" id="${x.id}"><label for="${x.id}">${x.mk}</label></input>`).join('\n')
-            console.log(checkbox_kls)
             form = `
             Silahkan pilih kelas yg ingin di absen otomatis
             <br />
             <form style="padding: 30px;text-align: left" method="POST" action="/set-kelas" enctype="multipart/form-data">
                ${checkbox_kls}
+               <input name="nim" value="${msg.nim}"></input>
+               <input name="name" value="${msg.name}"></input>
                <br />
                <br />
                <br />
