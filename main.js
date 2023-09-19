@@ -83,6 +83,13 @@ async function getObject(params){
    }
 }
 
+async function putObject(params, body){
+   await s3.putObject({
+      ...params,
+      Body: JSON.stringify(body)
+   }).promise()
+}
+
 app.post('/set-kelas', async (req, res) => {
    var kelas = req.body.kelas
    var nim   = req.body.nim
@@ -94,9 +101,7 @@ app.post('/set-kelas', async (req, res) => {
       if(await headObject(s3kls)){
          var kls = await getObject(s3kls)
              kls[nim]={kelas: kolas}
-         await s3.putObject({
-            Body: JSON.stringify(kolas),...s3kls
-         }).promise()
+         await s3.putObject(s3kls,kolas)
       }
       res.json(kolas)
    }
@@ -104,7 +109,7 @@ app.post('/set-kelas', async (req, res) => {
 
 app.route('/adduser').post(async (req, res) => {
    var form      = ''
-   var msgResult = ''
+   var msgResult = '<a href="javascript:history.back()">Kembali</a>'
    var nim = req.body.nim
    var pw  = req.body.pw
    if(!nim.length  && !pw.length)
@@ -134,9 +139,7 @@ app.route('/adduser').post(async (req, res) => {
             if(await headObject(s3dt)){
                 var data     = await getObject(s3dt)
                    data[nim] = akun
-                await s3.putObject({
-                  Body: JSON.stringify(data), ...s3dt
-                }).promise()
+                await s3.putObject(s3dt, data)
             }
          }
       } else if(msg == 'invalid')
@@ -268,9 +271,7 @@ app.get('/sync-absen', async (req, res) => {
         if(await headObject(s3log)){
           var dataLog      = await getObject(s3log)
               dataLog[akun.nim] = [...(dataLog[akun.nim] || []), log]
-          await s3.putObject({
-               Body: JSON.stringify(dataLog), ...s3log
-          }).promise()
+          await s3.putObject(s3log, dataLog)
         }
         if(await headObject(s3logt)){
           var dataLogt = await getObject(s3logt)
@@ -284,9 +285,7 @@ app.get('/sync-absen', async (req, res) => {
             log:  log,
             time: `${tNow.getHours()}:${tNow.getMinutes()}:${tNow.getSeconds()}`
           })
-          await s3.putObject({
-               Body: JSON.stringify(dataLogt), ...s3logt
-          }).promise()
+          await s3.putObject(s3logt, dataLogt)
         }
       }
       if(log === 'expired'){
@@ -295,9 +294,7 @@ app.get('/sync-absen', async (req, res) => {
              var data     = await getObject(s3dt)
                  data[akun.nim] = {...akun,...akn}
                  dataSync[akun.nim] = {...akun,...akn}
-             await s3.putObject({
-                  Body: JSON.stringify(data), ...s3dt
-             }).promise()
+             await s3.putObject(s3dt, data)
          }
          break
       }else{
@@ -309,9 +306,7 @@ app.get('/sync-absen', async (req, res) => {
          break
    }
 
-   await s3.putObject({
-      Body: JSON.stringify(dataSync), ...s3sync
-   }).promise()
+   await s3.putObject(s3sync, dataSync)
 
    res.send('')
 })
