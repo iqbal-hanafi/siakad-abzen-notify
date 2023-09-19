@@ -14,7 +14,7 @@ var apiKey = [
 
 var key = apiKey.pop()
 
-async function absen(kuki){
+async function getKls(kuki){
    var absenreq = request.defaults({
       headers: {
          'User-Agent': UA,
@@ -23,37 +23,87 @@ async function absen(kuki){
    })
    return await new Promise((resv)=>{
       absenreq.get(`${URL}/mahasiswa/jadwal`, async (e,r,b)=>{
-         if(!b.includes('Logout'))
-            return resv('expired')
-         var msg = '';
-         for(id of parse(b).querySelectorAll('[data-id*="unsulbar"]')){
-            id = id.getAttribute('data-id')
-            msg += await new Promise((resv)=>{
-               absenreq.post(`${URL}/mahasiswa/jadwal/presensi`,(e,r,b)=>{
-                  var mk = b.match(/(?<=Matakuliah\s\:)(?:[\w\s]+)/)[0]
-                  var msg = b.match(/(?<=\<br\/\>)((Pre|Per)[A-Za-z\:\s0-9]+)/)[0]
-                  if (b.toLowerCase().includes('tandai kehadiran')){
-                     // notif absen dibuka
-                     var setabsen = parse(b).querySelector('form')
-                     var acturl = setabsen.getAttribute('action')
-                     var data = {};
-                     for(inp of setabsen.querySelectorAll('input'))
-                        data[
-                            inp.getAttribute('name')
-                        ] = inp.getAttribute('value')
-                     absenreq.post(acturl,(e,r,b) => {
-                        console.log(b)
-                     }).form(data)
-                     return resv(`${mk} ${msg}\n`)
-                  }
-                  return resv('')
-               }).form({kls_id: id})
-            })
+         var msgD = {
+            success: null,
+            eror: null,
+            data: [],
+            msg: null
          }
-         return resv(msg)
+         if(!b.includes('Logout')){
+            msgD.eror = true
+            msgD.msg  = 'expired'
+         } else {
+            for(id of parse(b).querySelectorAll('[data-id*="unsulbar"]')){
+               id = id.getAttribute('data-id')
+               mk = await new Promise((resv1)=>{
+                  absenreq.post(`${URL}/mahasiswa/jadwal/presensi`,(e,r,b)=>{
+                     return resv1((b.match(/(?<=Matakuliah\s\:)(?:[\w\s]+)/)[0] || '').trim())
+                  }).form({kls_id: id})
+               })
+               msgD.data.push({id,mk})
+            }
+            msgD.success = (msgD.data !== [])
+         }
+         return resv(msgD)
       })
    })
 }
+
+async function absen(kuki, mkL){
+   var absenreq = request.defaults({
+      headers: {
+         'User-Agent': UA,
+         'Cookie': kuki
+      }
+   })
+   return await new Promise((resv)=>{
+      absenreq.get(`${URL}/mahasiswa/jadwal`, async (e,r,b)=>{
+         var msgD = {
+            success: null,
+            eror: null,
+            data: [],
+            msg: null
+         }
+         if(!b.includes('Logout')){
+            msgD.eror = true
+            msgD.msg = 'expired'
+         } else {
+            for(id of parse(b).querySelectorAll('[data-id*="unsulbar"]')){
+               id = id.getAttribute('data-id')
+               rs = await new Promise((resv, rej)=>{
+                  absenreq.post(`${URL}/mahasiswa/jadwal/presensi`,(e,r,b)=>{
+                     var mk = (b.match(/(?<=Matakuliah\s\:)(?:[\w\s]+)/)[0]).trim()
+                     // filter
+                     if(mkL[id] === mk){
+                        var msg = b.match(/(?<=\<br\/\>)((Pre|Per)[A-Za-z\:\s0-9]+)/)[0]
+                        if (b.toLowerCase().includes('tandai kehadiran')){
+                           // notif absen dibuka
+                           var setabsen = parse(b).querySelector('form')
+                           var acturl = setabsen.getAttribute('action')
+                           var data = {};
+                           for(inp of setabsen.querySelectorAll('input'))
+                              data[
+                                  inp.getAttribute('name')
+                              ] = inp.getAttribute('value')
+                           absenreq.post(acturl,(e,r,b) => {
+                              console.log(b)
+                           }).form(data)
+                           resv({mk, msg})
+                        }
+                     }
+                     rej()
+                  }).form({kls_id: id})
+               })
+               if(rs)
+                  msgD.data.push(rs)
+            }
+            msgD.success = (msgD.data !== [])
+         }
+         return resv(msgD)
+      })
+   })
+}
+
 
 async function login(usr, pwd){
    var jar    = request.jar()
@@ -134,4 +184,4 @@ async function login(usr, pwd){
    }
 }
 
-module.exports = {login,absen}
+module.exports = {login,absen,getKls}

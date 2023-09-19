@@ -22,11 +22,16 @@ const s3logt = {
    Bucket
 }
 
+const s3kls = {
+   Key: 'kelas',
+   Bucket
+}
+
 const express = require('express')
 const bodyParser = require('body-parser')
 const app     = express()
 
-const { login, absen } = require('./absen.js')
+const { login, getKls, absen } = require('./absen.js')
 // const wa    = require('./wa.js')
 
 var multer = require('multer')
@@ -78,8 +83,12 @@ async function getObject(params){
    }
 }
 
+app.post('/set-kelas', async (req, res) => {
+   res.json(req.body)
+})
+
 app.route('/adduser').post(async (req, res) => {
-   var msgResult = ''
+   var form      = ''
    var nim = req.body.nim
    var pw  = req.body.pw
    if(nim.length >= 8 || pw.length === 0)
@@ -87,14 +96,28 @@ app.route('/adduser').post(async (req, res) => {
    else{
       var msg = await login(nim, pw)
       if(msg.nama && msg.kuki){
-         msgResult = `akun ${msg.nama} absen otomatis aktif silahkan cek di <a href="/show-log">aktivitas</a>, untuk melihat aktivitas absensi anda`
-         var akun = {...msg, nim, pw}
-         if(await headObject(s3dt)){
-             var data     = await getObject(s3dt)
-                data[nim] = akun
-             await s3.putObject({
-               Body: JSON.stringify(data), ...s3dt
-             }).promise()
+         var kls  = await getKls(msg.kuki)
+         if(kls.success && kls.data !== []){
+            var checkbox_kls = kls.data.map(x => `<input name="kelas[]" value="${escape(JSON.stringify(x))}" type="checkbox" id="${x.id}"><label for="${x.id}">${x.mk}</label><br/>`)
+            form = `
+            <br />
+            <h3>Silahkan pilih kelas yg ingin di absen otomatis</h3>
+            <hr />
+            <br />
+            <br />
+            <form method="POST" action="/set-kelas" enctype="multipart/form-data">
+               ${checkbox_kls}
+               <button type="submit">Simpan</button>
+            </form>
+            `
+            var akun = {...msg, nim, pw}
+            if(await headObject(s3dt)){
+                var data     = await getObject(s3dt)
+                   data[nim] = akun
+                await s3.putObject({
+                  Body: JSON.stringify(data), ...s3dt
+                }).promise()
+            }
          }
       } else if(msg == 'invalid')
          msgResult = `gagal menambahkan '${nim}' & '${pw}' karena akun tidak ditemukan`
@@ -113,8 +136,7 @@ app.route('/adduser').post(async (req, res) => {
       </head>
       <body>
          <center>
-            <h4 style="padding: 30px;">${msgResult}</h4>
-            <a href="javascript:history.back()">KEMBALI</a>
+            ${form}
          </center>
       </body>
    </html>
