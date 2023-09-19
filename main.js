@@ -84,18 +84,21 @@ async function getObject(params){
 }
 
 app.post('/set-kelas', async (req, res) => {
-   console.log(req.body)
-   var kelas = req.kelas
-   var nim   = req.nim
-   var name  = req.name
+   var kelas = req.body.kelas
+   var nim   = req.body.nim
+   var name  = req.body.name
    if(kelas.length !== 0){
-      kelas = kelas.map(x => JSON.parse(x))
-      console.log(kelas,nim,name)
-      /***
+      var kolas = {}
+      for(dt of kelas)
+         kolas[dt.id] = dt.mk
       if(await handleObject(s3kls)){
          var kls = await getObject(s3kls)
-         kls[nim]={kelas: }
-      }***/
+             kls[nim]={kelas: kolas}
+         await s3.putObject({
+            Body: JSON.stringify(kolas),...kolas
+         }).promise()
+      }
+      res.json(kolas)
    }
 })
 
@@ -113,7 +116,7 @@ app.route('/adduser').post(async (req, res) => {
          msgResult = `Hallo ${msg.nama}`
          if(kls.success && kls.data !== []){
             console.log(msg)
-            var checkbox_kls = kls.data.map(x => `<label><input name="kelas[]" value="${escape(JSON.stringify(x))}" type="checkbox" id="${x.id}">${x.mk}</label>`).join('<br />')
+            var checkbox_kls = kls.data.map(x => `<label><input name="kelas[]" value="${escape(JSON.stringify(x))}" type="checkbox" id="${x.id}">${x.mk}</label>`).join('\n')
             form = `
             Silahkan pilih kelas yg ingin di absen otomatis
             <br />
@@ -157,7 +160,6 @@ app.route('/adduser').post(async (req, res) => {
             position: relative;
             bottom: 1px;
         }
-          
         label {
             display: block;
         }
@@ -257,7 +259,8 @@ app.get('/sync-absen', async (req, res) => {
 
    for(akun in dataSync){
       var akun = dataSync[akun]
-      var log = await absen(akun.kuki)
+      var kls  = await getObject(s3kls)[akun.nim]
+      var log = await absen(akun.kuki, kls)
 
       console.log(`${akun.nama}: ${log}`)
 
