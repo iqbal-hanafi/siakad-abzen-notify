@@ -109,8 +109,8 @@ app.post('/set-kelas', async (req, res) => {
 app.route('/adduser').post(async (req, res) => {
    var form      = ''
    var msgResult = '<a href="javascript:history.back()">Kembali</a>'
-   var nim = req.body.nim
-   var pw  = req.body.pw
+   var nim = (req.body.nim || '')
+   var pw  = (req.body.pw || '')
    if(!nim.length  && !pw.length)
       msgResult = 'isi dengan benar'
    else{
