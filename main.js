@@ -26,10 +26,10 @@ const s3kls = {
    Key: 'kelas',
    Bucket
 }
-
+/***
 for(x of [s3kls, s3logt, s3sync, s3log, s3dt])
    s3.deleteObject(x)
-
+***/
 const express = require('express')
 const bodyParser = require('body-parser')
 const app     = express()
@@ -99,7 +99,7 @@ app.post('/set-kelas', async (req, res) => {
          kolas[dt.id] = dt.mk
       if(await headObject(s3kls)){
          var kls = await getObject(s3kls)
-             kls[nim.strip()]={kelas: kolas}
+             kls[nim]={kelas: kolas}
          await putObject(s3kls,kls)
       }
    }
