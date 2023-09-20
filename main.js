@@ -256,12 +256,12 @@ app.get('/sync-absen', async (req, res) => {
    if(!Object.keys(dataSync).length)
       var dataSync = await getObject(s3dt)
 
-   var orang = 2
+   var log = null
 
    for(akun in dataSync){
       var akun = dataSync[akun]
       var kls  = await getObject(s3kls)[akun.nim]
-      var log = await absen(akun.kuki, kls)
+      log = await absen(akun.kuki, kls)
 
       console.log(`${akun.nama}: ${log}`)
 
@@ -294,19 +294,14 @@ app.get('/sync-absen', async (req, res) => {
                  dataSync[akun.nim] = {...akun,...akn}
              await putObject(s3dt, data)
          }
-         break
-      }else{
+      }else
          delete dataSync[akun.nim]
-         orang = orang - 1
-      }
-
-      if(orang<=0)
-         break
+      break
    }
 
    await putObject(s3sync, dataSync)
 
-   res.send('')
+   res.json(log)
 })
 
 
