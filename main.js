@@ -96,8 +96,8 @@ app.post('/set-kelas', async (req, res) => {
    var kelas = req.body.kelas
    var nim   = req.body.nim
    var name  = req.body.name
+   var kolas = {}
    if(kelas.length !== 0){
-      var kolas = {}
       for(dt of kelas)
          kolas[dt.id] = dt.mk
       if(await headObject(s3kls)){
@@ -105,6 +105,7 @@ app.post('/set-kelas', async (req, res) => {
              kls[nim]={kelas: kolas}
          await putObject(s3kls,kolas)
       }
+      console.log(kolas)
       res.json(kolas)
    }
    res.json(kolas)
