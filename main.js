@@ -93,7 +93,7 @@ app.post('/set-kelas', async (req, res) => {
    var name  = req.body.name
    var kolas = {}
    if(kelas.length !== 0){
-      for(dt of kelas.map(x => JSON.parse(x)))
+      for(dt of kelas.map(x => JSON.parse(unescape(x))))
          kolas[dt.id] = dt.mk
       if(await headObject(s3kls)){
          var kls = await getObject(s3kls)
