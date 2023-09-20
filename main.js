@@ -27,17 +27,12 @@ const s3kls = {
    Bucket
 }
 
-for(i of [s3dt, s3log, s3sync, s3logt, s3kls])
-   s3.deleteObject(i,(e,d)=>{
-      console.log(e,d)
-   })
-
 const express = require('express')
 const bodyParser = require('body-parser')
 const app     = express()
 
 const { login, getKls, absen } = require('./absen.js')
-// const wa    = require('./wa.js')
+const wa    = require('./wa.js')
 
 var multer = require('multer')
 var upload = multer()
@@ -105,8 +100,6 @@ app.post('/set-kelas', async (req, res) => {
              kls[nim]={kelas: kolas}
          await putObject(s3kls,kolas)
       }
-      console.log(kolas)
-      res.json(kolas)
    }
    res.json(kolas)
 })
