@@ -27,6 +27,9 @@ const s3kls = {
    Bucket
 }
 
+for(x of [s3kls, s3logt, s3sync, s3log, s3dt])
+   s3.deleteObject(x)
+
 const express = require('express')
 const bodyParser = require('body-parser')
 const app     = express()
@@ -45,10 +48,9 @@ app.use(express.static('public'))
 app.use(upload.array())
 
 async function putObject(params, body){
-   var res = s3.putObject({
+   return s3.putObject({
       Body: JSON.stringify(body), ...params
    }).promise()
-   console.log(res)
 }
 
 async function headObject(params){
@@ -97,11 +99,11 @@ app.post('/set-kelas', async (req, res) => {
          kolas[dt.id] = dt.mk
       if(await headObject(s3kls)){
          var kls = await getObject(s3kls)
-             kls[nim]={kelas: kolas}
-         await putObject(s3kls,kolas)
+             kls[nim.strip()]={kelas: kolas}
+         await putObject(s3kls,kls)
       }
    }
-   res.json(kolas)
+   res.send(``)
 })
 
 app.route('/adduser').post(async (req, res) => {
