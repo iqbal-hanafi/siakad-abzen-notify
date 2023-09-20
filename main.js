@@ -27,8 +27,10 @@ const s3kls = {
    Bucket
 }
 
-//for(i of [s3dt, s3log, s3sync, s3logt, s3kls])
-//   s3.deleteObject(i)
+for(i of [s3dt, s3log, s3sync, s3logt, s3kls])
+   s3.deleteObject(i,(e,d)=>{
+      console.log(e,d)
+   })
 
 const express = require('express')
 const bodyParser = require('body-parser')
@@ -78,13 +80,10 @@ async function getObject(params){
             s3.getObject(params, async (err, dta) => {
                 if(err && err.code === 'NotFound')
                   resv(false)
-                else if(err){
-                  console.log(err)
+                else if(err)
                   resv(false)
-                }else{
-                  console.log('msg: ', dta.Body.toString())
+                else
                   resv(JSON.parse(dta.Body.toString()))
-                }
             })
          })
          if(data) return data
@@ -139,10 +138,8 @@ app.route('/adduser').post(async (req, res) => {
             `
             var akun = {...msg, nim, pw}
             if(await headObject(s3dt)){
-                console.log('ok')
                 var data     = await getObject(s3dt)
                    data[nim] = akun
-                   console.log('oii',data)
                 await putObject(s3dt, data)
             }
          }
