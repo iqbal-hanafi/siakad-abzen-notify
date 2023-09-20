@@ -26,12 +26,12 @@ const s3kls = {
    Key: 'kelas',
    Bucket
 }
-
+/***
 for(i of [s3dt, s3log, s3sync, s3logt, s3kls])
    s3.deleteObject(i,(e,d)=>{
       console.log(e,d)
    })
-
+***/
 const express = require('express')
 const bodyParser = require('body-parser')
 const app     = express()
@@ -50,9 +50,10 @@ app.use(express.static('public'))
 app.use(upload.array())
 
 async function putObject(params, body){
-   return await s3.putObject({
+   var res = s3.putObject({
       Body: JSON.stringify(body), ...params
    }).promise()
+   console.log(res)
 }
 
 async function headObject(params){
