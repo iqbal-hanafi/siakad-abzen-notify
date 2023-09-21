@@ -136,7 +136,7 @@ app.route('/adduser').post(async (req, res) => {
                if(kls.success && kls.data !== []){
                   var checkbox_kls = kls.data.map(x => `<label><input name="kelas[]" value="${escape(JSON.stringify(x))}" type="checkbox" id="${x.id}">${x.mk}</label>`).join('\n')
                   form = `
-                  Silahkan pilih kelas yg ingin di absen otomatis
+                  Silahkan pilih kelas yg ingin di presensi otomatis
                   <br />
                   <br />
                   <form style="padding: 30px;text-align: left" method="POST" action="/set-kelas" enctype="multipart/form-data">
@@ -304,7 +304,7 @@ app.get('/about', (req, res) => {
    res.render('main', {
       title: 'About',
       html: `<span style="text-align: center">
-         Aplikasi ini adalah alat absensi otomatis dengan menggunakan sistem live check pada web 'siakad.unsulbar.ac.id' dibuat untuk mahasiswa/i yang sering terlewat absensi di siakad karena faktor lupa, hilang jaringan, dll
+         Aplikasi ini adalah alat presensi otomatis dengan menggunakan sistem live check pada web 'siakad.unsulbar.ac.id' dibuat untuk mahasiswa/i yang sering terlewat presensi di siakad karena faktor lupa, hilang jaringan, dll
          <a style="font-size: 12px;text-decoration:none;color:black;" href="https://instagram.com/ikbal.rdmc__">
             <i> ~ by <u>@ikbal.rdmc__</u></i>
          </a>

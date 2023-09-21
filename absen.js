@@ -103,7 +103,7 @@ async function absen(kuki, mkL){
             if(terdeteksi)
                msgD.msg = 'melakukan presensi otomatis'
             else
-               msgD.msg = 'tidak terdeteksi ada presensi yang sedang terbuka'
+               msgD.msg = 'tidak terdeteksi adanya presensi yang sedang terbuka'
             msgD.success = (msgD.data !== [])
          }
          return resv(msgD)
