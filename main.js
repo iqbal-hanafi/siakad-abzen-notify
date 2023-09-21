@@ -249,6 +249,7 @@ app.get('/sync-absen', async (req, res) => {
 app.route('/show-log').post(async (req, res) => {
    var title = 'Akun tidak ditemukan'
    var nim = req.body.nim
+   var msg = ''
    if(nim){
       var data = ((await getObject(s3log))[nim] || [])
       if(Object.keys(data).length !== 0){
