@@ -26,10 +26,7 @@ const s3kls = {
    Key: 'kelas',
    Bucket
 }
-/***
-for(x of [s3kls, s3logt, s3sync, s3log, s3dt])
-   s3.deleteObject(x)
-***/
+
 
 const express = require('express')
 const bodyParser = require('body-parser')
@@ -121,36 +118,40 @@ app.route('/adduser').post(async (req, res) => {
    var pw  = (req.body.pw || '')
    if(!nim.length  && !pw.length)
       msgResult = 'isi dengan benar'
-   else{
-      var msg = await login(nim, pw)
-      if(msg.nama && msg.kuki){
-         var kls  = await getKls(msg.kuki)
-         msgResult = `Hallo ${msg.nama}`
-         if(kls.success && kls.data !== []){
-            var checkbox_kls = kls.data.map(x => `<label><input name="kelas[]" value="${escape(JSON.stringify(x))}" type="checkbox" id="${x.id}">${x.mk}</label>`).join('\n')
-            form = `
-            Silahkan pilih kelas yg ingin di absen otomatis
-            <br />
-            <form style="padding: 30px;text-align: left" method="POST" action="/set-kelas" enctype="multipart/form-data">
-               ${checkbox_kls}
-               <input type="hidden" name="nim" value="${nim}"></input>
-               <input type="hidden" name="name" value="${msg.nama}"></input>
+   else {
+      if(await headObject(s3dt)){
+         var dataAkun = await getObject(s3dt)
+         var data     = {}
+         if(dataAkun[nim])
+            data = dataAkun[nim]
+         else
+            data = await login(nim, pw)
+         if(data.nama && data.kuki){
+            var kls  = await getKls(data.kuki)
+            if(kls.success && kls.data !== []){
+               var checkbox_kls = kls.data.map(x => `<label><input name="kelas[]" value="${escape(JSON.stringify(x))}" type="checkbox" id="${x.id}">${x.mk}</label>`).join('\n')
+               form = `
+               Silahkan pilih kelas yg ingin di absen otomatis
                <br />
                <br />
+               <form style="padding: 30px;text-align: left" method="POST" action="/set-kelas" enctype="multipart/form-data">
+                  ${checkbox_kls}
+                  <input type="hidden" name="nim" value="${nim}"></input>
+                  <input type="hidden" name="name" value="${data.nama}"></input>
+                  <br />
+                  <br />
+                  <br />
+                  <button type="submit">Simpan</button>
+               </form>
                <br />
-               <button type="submit">Simpan</button>
-            </form>
-            <br />
-            `
-            var akun = {...msg, nim, pw}
-            if(await headObject(s3dt)){
-                var data     = await getObject(s3dt)
-                   data[nim] = akun
-                await putObject(s3dt, data)
+               `
+               dataAkun[nim] = {...data, nim, pw}
+               await putObject(s3dt, dataAkun)
+               msgResult = `Hallo ${data.nama}`
             }
-         }
-      } else if(msg == 'invalid')
-         msgResult = `gagal menambahkan '${nim}' & '${pw}' karena akun tidak ditemukan`
+         } else if(msg == 'invalid')
+            msgResult = `gagal menambahkan '${nim}' & '${pw}' karena akun tidak ditemukan`
+      }
    }
    res.render('main', {
       title:msgResult,
