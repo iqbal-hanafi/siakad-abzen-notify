@@ -278,22 +278,25 @@ app.get('/', async (req, res) => {
       var dataLogt = await getObject(s3logt)
       if(dataLogt.data)
          for(dt of dataLogt.data)
-            msg += `<li>${dt.nama} - ${dt.log.mk}:${dt.log.msg} - [ ${dt.time} ]</li><br />`
+            msg += `<li>${dt.nama} - ${dt.log.mk}:${dt.log.msg} - (${dt.time})</li><br />`
    }
+   if(await headObject(s3dt)){
+      var data = await getObject(s3dt)
+      if(Object.keys(data).length)
+         msg += '<hr/><br /><h2>Daftar pengguna</h2><br/><ul>'
+         for(dt in data){
+            dt = data[dt]
+            msg += `<li>${dt.nama} (${dt.nim})</li>`
+         }
+         msg += '</ul>'
+   }
+
    res.render('main', {
       title:'Riwayat Hari ini',
       html:msg
    })
 })
 
-
-app.get('/show-user', async (req, res) => {
-   if(await headObject(s3dt)){
-      var data = await getObject(s3dt)
-      res.json(data)
-   }
-   res.send('')
-})
 
 app.get('/about', (req, res) => {
    res.render('main', {
