@@ -95,14 +95,18 @@ app.post('/set-kelas', async (req, res) => {
    var title = ''
    var msg   = ''
    if(kelas.length !== 0){
-      for(dt of kelas.map(x => JSON.parse(unescape(x))))
+      var kls = '<ul>'
+      for(dt of kelas.map(x => JSON.parse(unescape(x)))){
+         msg += `<li>dt.mk</li>`
          kolas[dt.id] = dt.mk
+      }
+      kls += '</ul>'
       if(await headObject(s3kls)){
          var kls = await getObject(s3kls)
              kls[nim]={kelas: kolas}
          await putObject(s3kls,kls)
          title = 'Selesai disimpan'
-         msg   = `akun ${name}:${nim} selesai di simpan`
+         msg   = `${kls}<br/>Halo ${name} [ ${nim} ] kelas sudah di simpan, anda bisa perbarui dengan loging ulang<br />`
       }
    }
    res.render('main', {
@@ -279,16 +283,6 @@ app.get('/show-user', async (req, res) => {
       res.json(data)
    }
    res.send('')
-})
-
-app.get('/cekabsen/:nim/:pw', async (req, res) => {
-  var nim  = req.params.nim
-  var pw   = req.params.pw
-  var akun = await login(nim, pw)
-  var msg  = ''
-  if(akun.kuki)
-     msg = await absen(akun.kuki)
-  return res.send(msg)
 })
 
 app.listen(process.env.PORT || 3000, async () => {
