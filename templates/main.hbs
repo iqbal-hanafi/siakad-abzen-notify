@@ -106,9 +106,9 @@
       </center>
       <marquee class="footer" bgcolor="black" direction="right">#SALAM TEKNIK ☠️</marquee>
       <script>
-         var main = document.querySelector(`a[href='${window.location.href}']`)
-         alert(main)
-                   main.classList.add('active')
+         document
+            .querySelector(`.header-right>a[href='${window.location.pathname}']`)
+            .classList.add('active')
       </script>
       </body>
 </html>
