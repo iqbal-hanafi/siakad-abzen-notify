@@ -242,7 +242,7 @@ app.route('/show-log').post(async (req, res) => {
    }
    res.render('main', {
       title:msg,
-      form=msg
+      html:msg
    })
 }).get((req, res)=>{
    res.render('main', {
