@@ -138,6 +138,7 @@ app.route('/adduser').post(async (req, res) => {
 
                if(kls.success && kls.data !== []){
                   var checkbox_kls = kls.data.map(x => `<label><input name="kelas[]" value="${escape(JSON.stringify(x))}" type="checkbox" id="${x.id}" ${'checked' ? klsb.hasOwnProperty(x.id) : ''}>${x.mk}</label>`).join('\n')
+                  console.log(checkbox_kls)
                   form = `
                   Silahkan pilih kelas yg ingin di presensi otomatis
                   <br />
