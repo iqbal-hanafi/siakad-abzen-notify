@@ -238,18 +238,19 @@ app.get('/sync-absen', async (req, res) => {
 
 
 app.route('/show-log').post(async (req, res) => {
-   var msg = 'akun tidak ditemukan'
+   var title = 'akun tidak ditemukan'
    var nim = req.body.nim
    if(nim){
       var data = (await getObject(s3log))[nim]
       if(Object.keys(data).length !== 0){
          msg = data.map(x => `<li>${x.mk}: ${x.msg}</li>`).join('\n')
          msg = `<ul>${msg}</ul>`
+         title = `Aktivitas Anda`
       }else
-         msg = 'aktivitas belum ada'
+         title = 'aktivitas belum ada'
    }
    res.render('main', {
-      title:msg,
+      title,
       html:msg
    })
 }).get((req, res)=>{
