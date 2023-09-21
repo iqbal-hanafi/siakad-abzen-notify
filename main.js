@@ -193,7 +193,7 @@ app.get('/sync-absen', async (req, res) => {
 
       console.log(`${akun.nama}: ${log}`)
 
-      if(log !== 'expired' && log !== ''){
+      if(log.msg !== 'expired' && log.eror){
         if(await headObject(s3log)){
           var dataLog      = await getObject(s3log)
               dataLog[akun.nim] = [...(dataLog[akun.nim] || []), log]
@@ -208,7 +208,7 @@ app.get('/sync-absen', async (req, res) => {
           }
           dataLogt.data.push({
             nama: akun.nama,
-            log:  log,
+            log:  log.data,
             time: `${tNow.getHours()}:${tNow.getMinutes()}:${tNow.getSeconds()}`
           })
           await putObject(s3logt, dataLogt)
@@ -266,7 +266,7 @@ app.get('/', async (req, res) => {
       var dataLogt = await getObject(s3logt)
       if(dataLogt.data)
          for(dt of dataLogt.data)
-            msg += `<li>${dt.nama} - ${dt.log} - [ ${dt.time} ]</li><br />`
+            msg += `<li>${dt.nama} - ${dt.log.mk}:${dt.log.msg} - [ ${dt.time} ]</li><br />`
    }
    res.render('main', {
       title:'Riwayat Hari ini',
