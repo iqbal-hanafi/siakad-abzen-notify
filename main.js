@@ -97,7 +97,7 @@ app.post('/set-kelas', async (req, res) => {
    if(kelas.length !== 0){
       var rkls = '<ul>'
       for(dt of kelas.map(x => JSON.parse(unescape(x)))){
-         rkls += `<li>dt.mk</li>`
+         rkls += `<li>${dt.mk}</li>`
          kolas[dt.id] = dt.mk
       }
       rkls += '</ul>'
