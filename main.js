@@ -289,7 +289,7 @@ app.get('/', async (req, res) => {
          msg += '<hr/><br /><h2>Daftar Pengguna</h2><br/><ul>'
          for(dt in data){
             dt = data[dt]
-            msg += `<li>${dt.nama} (${dt.nim})</li>`
+            msg += `<li>${dt.nama} (${dt.nim.slice(0,5)}***)</li>`
          }
          msg += '</ul>'
    }
