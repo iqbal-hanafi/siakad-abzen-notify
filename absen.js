@@ -95,6 +95,7 @@ async function absen(kuki, mkL){
                      resv({})
                   }).form({kls_id: id})
                })
+               console.log(rs)
                if(rs !== {}){
                   msgD.data.push(rs)
                   terdeteksi = true
