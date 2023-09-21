@@ -198,7 +198,10 @@ app.get('/sync-absen', async (req, res) => {
 
    for(akun in dataSync){
       var akun = dataSync[akun]
-      var kls  = await getObject(s3kls)[akun.nim]
+      var kls  = await getObject(s3kls)
+          console.log(kls, akun.nim)
+          kls  = kls[akun.nim]
+      if(!kls) continue
       var log = await absen(akun.kuki, kls)
 
       console.log(`${akun.nama}: ${log.msg}`)
