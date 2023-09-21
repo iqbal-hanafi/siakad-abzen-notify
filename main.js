@@ -250,7 +250,7 @@ app.route('/show-log').post(async (req, res) => {
    var title = 'Akun tidak ditemukan'
    var nim = req.body.nim
    if(nim){
-      var data = (await getObject(s3log))[nim]
+      var data = ((await getObject(s3log))[nim] || [])
       if(Object.keys(data).length !== 0){
          msg = data.map(x => `<li>${x.mk}: ${x.msg}</li>`).join('\n')
          msg = `<ul>${msg}</ul>`
