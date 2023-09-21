@@ -106,7 +106,7 @@ app.post('/set-kelas', async (req, res) => {
              kls[nim]={kelas: kolas}
          await putObject(s3kls,kls)
          title = 'Selesai disimpan'
-         msg   = `<img src="/img/checklist.png" style="display: block;margin-left: auto;margin-right: auto;;width: 150px;"></img><br />Halo ${name} [ ${nim} ] kelas sudah di simpan, anda bisa perbarui dengan login ulang<br /><br />${rkls}`
+         msg   = `<img src="/img/checklist.png" style="display: block;margin-left: auto;margin-right: auto;;width: 150px;"></img><br />Halo <b>${name}</b> ( ${nim} ) kelas sudah di simpan, anda bisa perbarui dengan login ulang<br /><br />${rkls}`
       }
    }
    res.render('main', {
@@ -133,8 +133,10 @@ app.route('/adduser').post(async (req, res) => {
          if(data.nama && data.kuki){
             while(true){
                var kls = await getKls(data.kuki)
+               var klsb  = await getObject(s3kls)
+                   klsb  = klsb[nim]
                if(kls.success && kls.data !== []){
-                  var checkbox_kls = kls.data.map(x => `<label><input name="kelas[]" value="${escape(JSON.stringify(x))}" type="checkbox" id="${x.id}">${x.mk}</label>`).join('\n')
+                  var checkbox_kls = kls.data.map(x => `<label><input name="kelas[]" value="${escape(JSON.stringify(x))}" type="checkbox" id="${x.id}"${' checked'?klsb[x.id]:''}>${x.mk}</label>`).join('\n')
                   form = `
                   Silahkan pilih kelas yg ingin di presensi otomatis
                   <br />
