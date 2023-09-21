@@ -167,6 +167,8 @@ app.route('/adduser').post(async (req, res) => {
       html:`
          <quote>patama'i akunmu sodara ( silahkan masukkan akun anda )</quote>
          <br />
+         <br />
+         <br />
          <form method="POST" enctype="multipart/form-data" autocomplete="off">
             <input type="text" name="nim" placeholder="username/nim"></input>
             <br />
@@ -190,9 +192,9 @@ app.get('/sync-absen', async (req, res) => {
    for(akun in dataSync){
       var akun = dataSync[akun]
       var kls  = await getObject(s3kls)[akun.nim]
-      log = await absen(akun.kuki, kls)
+      var log = await absen(akun.kuki, kls)
 
-      console.log(`${akun.nama}: ${log}`)
+      console.log(`${akun.nama}: ${log.msg}`)
 
       if(log.msg !== 'expired' && log.eror){
         if(await headObject(s3log)){
@@ -215,7 +217,7 @@ app.get('/sync-absen', async (req, res) => {
           await putObject(s3logt, dataLogt)
         }
       }
-      if(log === 'expired'){
+      if(log.msg === 'expired'){
          var akn = await login(akun.nim, akun.pw)
          if(await headObject(s3dt)){
              var data     = await getObject(s3dt)
