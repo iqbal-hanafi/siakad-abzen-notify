@@ -68,6 +68,7 @@ async function absen(kuki, mkL){
             msgD.eror = true
             msgD.msg = 'expired'
          } else {
+            var terdeteksi = false
             for(id of parse(b).querySelectorAll('[data-id*="unsulbar"]')){
                id = id.getAttribute('data-id')
                rs = await new Promise((resv, rej)=>{
@@ -94,9 +95,15 @@ async function absen(kuki, mkL){
                      resv({})
                   }).form({kls_id: id})
                })
-               if(rs)
+               if(rs !== {}){
                   msgD.data.push(rs)
+                  terdeteksi = true
+               }
             }
+            if(terdeteksi)
+               msgD.msg = 'melakukan presensi otomatis'
+            else
+               msgD.msg = 'tidak terdeteksi ada presensi yang sedang terbuka'
             msgD.success = (msgD.data !== [])
          }
          return resv(msgD)
