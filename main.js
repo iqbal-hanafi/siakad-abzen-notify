@@ -110,7 +110,7 @@ app.post('/set-kelas', async (req, res) => {
    }
    res.render('main', {
       title,
-      html=msg
+      html:msg
    })
 })
 
@@ -153,14 +153,13 @@ app.route('/adduser').post(async (req, res) => {
          msgResult = `gagal menambahkan '${nim}' & '${pw}' karena akun tidak ditemukan`
    }
    res.render('main', {
-      title=msgResult,
-      quote=msgResult,
-      html=form
+      title:msgResult,
+      html:form
    })
 }).get((req, res) => {
    res.render('main', {
-      title='Login Siakad',
-      html=`
+      title:'Login Siakad',
+      html:`
          <quote>patama'i akunmu sodara ( silahkan masukkan akun anda )</quote>
          <form method="POST" enctype="multipart/form-data" autocomplete="off">
             <input type="text" name="nim" placeholder="username/nim"></input>
@@ -242,13 +241,13 @@ app.route('/show-log').post(async (req, res) => {
          msg = 'aktivitas belum ada'
    }
    res.render('main', {
-      title=msg,
+      title:msg,
       form=msg
    })
 }).get((req, res)=>{
    res.render('main', {
-      title='lihat aktivitas akun anda',
-      html=`
+      title:'lihat aktivitas akun anda',
+      html:`
       <form method="POST" enctype="multipart/form-data" autocomplete="off">
          <input type="text" placeholder="nim" name="nim"></input>
          <br />
@@ -267,8 +266,8 @@ app.get('/', async (req, res) => {
             msg += `<li>${dt.nama} - ${dt.log} - [ ${dt.time} ]</li><br />`
    }
    res.render('main', {
-      title='Riwayat Hari ini',
-      html=msg
+      title:'Riwayat Hari ini',
+      html:msg
    })
 })
 
