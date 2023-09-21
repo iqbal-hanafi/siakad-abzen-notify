@@ -131,29 +131,36 @@ app.route('/adduser').post(async (req, res) => {
          else
             data = await login(nim, pw)
          if(data.nama && data.kuki){
-            var kls  = await getKls(data.kuki)
-            if(kls.success && kls.data !== []){
-               var checkbox_kls = kls.data.map(x => `<label><input name="kelas[]" value="${escape(JSON.stringify(x))}" type="checkbox" id="${x.id}">${x.mk}</label>`).join('\n')
-               form = `
-               Silahkan pilih kelas yg ingin di absen otomatis
-               <br />
-               <br />
-               <form style="padding: 30px;text-align: left" method="POST" action="/set-kelas" enctype="multipart/form-data">
-                  ${checkbox_kls}
-                  <input type="hidden" name="nim" value="${nim}"></input>
-                  <input type="hidden" name="name" value="${data.nama}"></input>
+            while(true){
+               var kls = await getKls(data.kuki)
+               if(kls.success && kls.data !== []){
+                  var checkbox_kls = kls.data.map(x => `<label><input name="kelas[]" value="${escape(JSON.stringify(x))}" type="checkbox" id="${x.id}">${x.mk}</label>`).join('\n')
+                  form = `
+                  Silahkan pilih kelas yg ingin di absen otomatis
                   <br />
                   <br />
+                  <form style="padding: 30px;text-align: left" method="POST" action="/set-kelas" enctype="multipart/form-data">
+                     ${checkbox_kls}
+                     <input type="hidden" name="nim" value="${nim}"></input>
+                     <input type="hidden" name="name" value="${data.nama}"></input>
+                     <br />
+                     <br />
+                     <br />
+                     <button type="submit">Simpan</button>
+                  </form>
                   <br />
-                  <button type="submit">Simpan</button>
-               </form>
-               <br />
-               `
-               dataAkun[nim] = {...data, nim, pw}
-               await putObject(s3dt, dataAkun)
-               msgResult = `Hallo ${data.nama}`
+                  `
+                  dataAkun[nim] = {...data, nim, pw}
+                  await putObject(s3dt, dataAkun)
+
+                  msgResult = `Hallo ${data.nama}`
+
+                  break
+               } else if(kls.msg === 'expired') {
+                  data = await login(nim, pw)
+               }
             }
-         } else if(msg == 'invalid')
+         } else if(data.msg == 'invalid')
             msgResult = `gagal menambahkan '${nim}' & '${pw}' karena akun tidak ditemukan`
       }
    }
