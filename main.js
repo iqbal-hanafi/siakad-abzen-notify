@@ -95,7 +95,7 @@ app.post('/set-kelas', async (req, res) => {
    var title = ''
    var msg   = ''
    if(kelas.length !== 0){
-      var rkls = '<ul>'
+      var rkls = '<ul class="chck">'
       for(dt of kelas.map(x => JSON.parse(unescape(x)))){
          rkls += `<li>${dt.mk}</li>`
          kolas[dt.id] = dt.mk
@@ -106,7 +106,7 @@ app.post('/set-kelas', async (req, res) => {
              kls[nim]={kelas: kolas}
          await putObject(s3kls,kls)
          title = 'Selesai disimpan'
-         msg   = `${rkls}<br/>Halo ${name} [ ${nim} ] kelas sudah di simpan, anda bisa perbarui dengan loging ulang<br />`
+         msg   = `Halo ${name} [ ${nim} ] kelas sudah di simpan, anda bisa perbarui dengan loging ulang<br /><br />${rkls}`
       }
    }
    res.render('main', {
