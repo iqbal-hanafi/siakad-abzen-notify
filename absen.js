@@ -91,7 +91,7 @@ async function absen(kuki, mkL){
                            resv({mk, msg})
                         }
                      }
-                     rej()
+                     resv({})
                   }).form({kls_id: id})
                })
                if(rs)
