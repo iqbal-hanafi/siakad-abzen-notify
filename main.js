@@ -245,7 +245,7 @@ app.get('/sync-absen', async (req, res) => {
 
 
 app.route('/show-log').post(async (req, res) => {
-   var title = 'akun tidak ditemukan'
+   var title = 'Akun tidak ditemukan'
    var nim = req.body.nim
    if(nim){
       var data = (await getObject(s3log))[nim]
@@ -254,7 +254,7 @@ app.route('/show-log').post(async (req, res) => {
          msg = `<ul>${msg}</ul>`
          title = `Aktivitas Anda`
       }else
-         title = 'aktivitas belum ada'
+         title = 'Aktivitas belum ada'
    }
    res.render('main', {
       title,
@@ -262,7 +262,7 @@ app.route('/show-log').post(async (req, res) => {
    })
 }).get((req, res)=>{
    res.render('main', {
-      title:'lihat aktivitas akun anda',
+      title:'Lihat Aktivitas Anda',
       html:`
       <form method="POST" enctype="multipart/form-data" autocomplete="off">
          <input type="text" placeholder="nim" name="nim"></input>
@@ -278,12 +278,12 @@ app.get('/', async (req, res) => {
       var dataLogt = await getObject(s3logt)
       if(dataLogt.data)
          for(dt of dataLogt.data)
-            msg += `<li>${dt.nama} - ${dt.log.mk}:${dt.log.msg} - (${dt.time})</li><br />`
+            msg += `<li>${dt.nama} - ${dt.log.mk}:${dt.log.msg} - (${dt.time})</li>`
    }
    if(await headObject(s3dt)){
       var data = await getObject(s3dt)
       if(Object.keys(data).length)
-         msg += '<hr/><br /><h2>Daftar pengguna</h2><br/><ul>'
+         msg += '<hr/><br /><h2>Daftar Pengguna</h2><br/><ul>'
          for(dt in data){
             dt = data[dt]
             msg += `<li>${dt.nama} (${dt.nim})</li>`
