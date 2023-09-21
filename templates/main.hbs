@@ -103,17 +103,11 @@
          {{{ html }}}
       <br />
       </center>
-      <div class="footer">
-         <span class="jstfy">
-            Aplikasi ini adalah alat absensi otomatis dengan menggunakan sistem live check pada web 'siakad.unsulbar.ac.id' dibuat untuk mahasiswa/i yang sering terlewat absensi di siakad karena faktor lupa, hilang jaringan, dll
-            <a style="font-size: 12px;text-decoration:none;color:black;" href="https://instagram.com/ikbal.rdmc__">
-               <i> ~ by <u>@ikbal.rdmc__</u></i>
-            </a>
-         </span>  
-         <marquee bgcolor="black" direction="right">#SALAM TEKNIK ☠️</marquee>
-      <div>
+      <marquee class="footer" bgcolor="black" direction="right">#SALAM TEKNIK ☠️</marquee>
       <script>
-         document.querySelector(`.header-right>a[href=${window.location.href}]`).classList.add('active')
+         var main = document.querySelector(`.header-right>a[href='${window.location.href}']`)
+         alert(main)
+                   main.classList.add('active')
       </script>
       </body>
 </html>
