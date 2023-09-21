@@ -1,4 +1,4 @@
-const AWS = require("aws-sdk");
+const AWS = require('aws-sdk')
 const s3 = new AWS.S3()
 
 const Bucket = 'cyclic-cooperative-flannel-shirt-eu-west-3'
@@ -30,6 +30,7 @@ const s3kls = {
 for(x of [s3kls, s3logt, s3sync, s3log, s3dt])
    s3.deleteObject(x)
 ***/
+
 const express = require('express')
 const bodyParser = require('body-parser')
 const app     = express()
@@ -41,9 +42,9 @@ var multer = require('multer')
 var upload = multer()
 
 app.use(bodyParser.json())
-
+app.set('views', './templates')
+app.set('view engine', 'hbs')
 app.use(bodyParser.urlencoded({ extended: true }))
-
 app.use(express.static('public'))
 app.use(upload.array())
 
@@ -94,6 +95,8 @@ app.post('/set-kelas', async (req, res) => {
    var nim   = req.body.nim
    var name  = req.body.name
    var kolas = {}
+   var title = ''
+   var msg   = ''
    if(kelas.length !== 0){
       for(dt of kelas.map(x => JSON.parse(unescape(x))))
          kolas[dt.id] = dt.mk
@@ -101,14 +104,19 @@ app.post('/set-kelas', async (req, res) => {
          var kls = await getObject(s3kls)
              kls[nim]={kelas: kolas}
          await putObject(s3kls,kls)
+         title = 'Selesai disimpan'
+         msg   = `akun ${name}:${nim} selesai di simpan`
       }
    }
-   res.send(``)
+   res.render('main', {
+      title,
+      html=msg
+   })
 })
 
 app.route('/adduser').post(async (req, res) => {
    var form      = ''
-   var msgResult = '<a href="javascript:history.back()">Kembali</a>'
+   var msgResult = ''
    var nim = (req.body.nim || '')
    var pw  = (req.body.pw || '')
    if(!nim.length  && !pw.length)
@@ -132,6 +140,7 @@ app.route('/adduser').post(async (req, res) => {
                <br />
                <button type="submit">Simpan</button>
             </form>
+            <br />
             `
             var akun = {...msg, nim, pw}
             if(await headObject(s3dt)){
@@ -143,89 +152,16 @@ app.route('/adduser').post(async (req, res) => {
       } else if(msg == 'invalid')
          msgResult = `gagal menambahkan '${nim}' & '${pw}' karena akun tidak ditemukan`
    }
-   res.send(`
-   <html>
-      <head>
-         <meta name="viewport" content="width=device-width, initial-scale=1"/>
-         <title>msgResult</title>
-         <style>
-            input,button {
-               height: 30px;
-               font-size: 20px;
-            }
-            h1 {
-            color: green;
-        }
-        input[type=checkbox] {
-            vertical-align: middle;
-            position: relative;
-            bottom: 1px;
-        }
-        label {
-            display: block;
-        }
-         </style>
-      </head>
-      <body>
-         <center>
-            <br />
-            <h2>${msgResult}</h2>
-            <hr />
-            <br />
-            ${form}
-         </center>
-      </body>
-   </html>
-   `)
-
+   res.render('main', {
+      title=msgResult,
+      quote=msgResult,
+      html=form
+   })
 }).get((req, res) => {
-   res.send(`
-   <html>
-      <head>
-         <meta name="viewport" content="width=device-width, initial-scale=1"/>
-         <title>AddUser SIAKAD USB</title>
-
-         <style>
-            input,button {
-               height: 30px;
-               font-size: 20px;
-            }
-            body {
-              margin: 0;
-              padding: 0;
-            }
-            .main {
-              margin: 20px;
-              min-height: calc(100vh - 70px - 100px);
-            }
-
-            .footer {
-              position: fixed;
-              bottom: 0;
-              width: 100%;
-              color: red;
-              height: 20px;
-            }
-            .jstfy {
-               text-align: justify;
-            }
-            .jstfy:after {
-              content: "";
-              display: inline-block;
-              width: 100%;
-            }
-
-         </style>
-      </head>
-      <body>
-         <audio src="/audio.mp3" preload="auto" autoplay="autoplay" loop></audio>
-         <center class="main">
-         <br/>
-         <br/>
-         <h2 style="padding: 20px;">LOGIN SIAKAD</h2>
+   res.render('main', {
+      title='Login Siakad',
+      html=`
          <quote>patama'i akunmu sodara ( silahkan masukkan akun anda )</quote>
-         <br />
-         <br />
          <form method="POST" enctype="multipart/form-data" autocomplete="off">
             <input type="text" name="nim" placeholder="username/nim"></input>
             <br />
@@ -236,19 +172,8 @@ app.route('/adduser').post(async (req, res) => {
             <button type="submit">Login</button>
             <button type="button" style="padding-left:3px;" onclick="window.location.href='/show-log';">Lihat aktivitas >></button>
          </form>
-         <br />
-         <br />
-         <span class="jstfy">
-            Aplikasi ini adalah alat absensi otomatis dengan menggunakan sistem live check pada web 'siakad.unsulbar.ac.id' dibuat untuk mahasiswa/i yang sering terlewat absensi di siakad karena faktor lupa, hilang jaringan, dll
-         </span>
-         <a style="font-size: 12px;text-decoration:none;color:black;" href="https://instagram.com/ikbal.rdmc__">
-            <i> ~ by <u>@ikbal.rdmc__</u></i>
-         </a>
-         </center>
-         <marquee class="footer" bgcolor="black" direction="right">#SALAM TEKNIK ☠️</marquee>
-         </body>
-   </html>
-   `)
+      `
+   })
 })
 
 app.get('/sync-absen', async (req, res) => {
@@ -316,55 +241,21 @@ app.route('/show-log').post(async (req, res) => {
       else
          msg = 'aktivitas belum ada'
    }
-   res.send(`
-      <html>
-         <head>
-            <meta name="viewport" content="width=device-width, initial-scale=1"/>
-            <title>Aktivitas ${nim}</title>
-         </head>
-         <body>
-            <main style="margin:20px">
-               <br />
-               <br />
-               <center>
-                  <a href="javascript:history.back()">kembali</a>
-               </center>
-               <hr />
-               <br />
-               ${msg}
-            </main>
-         </body>
-      </html>
-   `)
+   res.render('main', {
+      title=msg,
+      form=msg
+   })
 }).get((req, res)=>{
-   res.send(`
-      <html>
-         <head>
-            <meta name="viewport" content="width=device-width, initial-scale=1"/>
-            <title>Lihat Aktivitas</title>
-            <style>
-               input,button {
-                  height: 30px;
-                  font-size: 20px;
-               }
-            </style>
-         </head>
-         <body>
-            <center>
-            <br style="margin-top:30px"/>
-            <h2>Lihat aktivitas akun anda</h2>
-            <br style="margin-bottom:30px"/>
-            <form method="POST" enctype="multipart/form-data" autocomplete="off">
-               <input type="text" placeholder="nim" name="nim"></input>
-               <br />
-               <br />
-               <button type="submit">lihat aktivitas</button>
-               <button type="button" onclick="window.location.href='/adduser';" style="margin-left: 5px"><< Login akun</button>
-            </form>
-            </center>
-         </body>
-      </html>
-   `)
+   res.render('main', {
+      title='lihat aktivitas akun anda',
+      html=`
+      <form method="POST" enctype="multipart/form-data" autocomplete="off">
+         <input type="text" placeholder="nim" name="nim"></input>
+         <br />
+         <br />
+         <button type="submit">lihat aktivitas</button>
+         <button type="button" onclick="window.location.href='/adduser';" style="margin-left: 5px"><< Login akun</button>
+      </form>`})
 })
 
 app.get('/', async (req, res) => {
@@ -375,28 +266,10 @@ app.get('/', async (req, res) => {
          for(dt of dataLogt.data)
             msg += `<li>${dt.nama} - ${dt.log} - [ ${dt.time} ]</li><br />`
    }
-   res.send(`
-   <html>
-      <head>
-         <meta name="viewport" content="width=device-width, initial-scale=1"/>
-         <title>LogToday</title>
-         <style>
-            body {
-               padding: 20px;
-            }
-         </style>
-      </head>
-      <body>
-         <center><h1>Log today</h1></center>
-         <br />
-         <hr/>
-         <br />
-         <ul>
-         ${msg}
-         </ul>
-      </body>
-   </html>
-   `)
+   res.render('main', {
+      title='Riwayat Hari ini',
+      html=msg
+   })
 })
 
 
