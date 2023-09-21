@@ -174,7 +174,6 @@ app.route('/adduser').post(async (req, res) => {
             <br />
             <br />
             <button type="submit">Login</button>
-            <button type="button" style="padding-left:3px;" onclick="window.location.href='/show-log';">Lihat aktivitas >></button>
          </form>
       `
    })
@@ -258,7 +257,6 @@ app.route('/show-log').post(async (req, res) => {
          <br />
          <br />
          <button type="submit">lihat aktivitas</button>
-         <button type="button" onclick="window.location.href='/adduser';" style="margin-left: 5px"><< Login akun</button>
       </form>`})
 })
 
