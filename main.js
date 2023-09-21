@@ -95,18 +95,18 @@ app.post('/set-kelas', async (req, res) => {
    var title = ''
    var msg   = ''
    if(kelas.length !== 0){
-      var kls = '<ul>'
+      var rkls = '<ul>'
       for(dt of kelas.map(x => JSON.parse(unescape(x)))){
-         msg += `<li>dt.mk</li>`
+         rkls += `<li>dt.mk</li>`
          kolas[dt.id] = dt.mk
       }
-      kls += '</ul>'
+      rkls += '</ul>'
       if(await headObject(s3kls)){
          var kls = await getObject(s3kls)
              kls[nim]={kelas: kolas}
          await putObject(s3kls,kls)
          title = 'Selesai disimpan'
-         msg   = `${kls}<br/>Halo ${name} [ ${nim} ] kelas sudah di simpan, anda bisa perbarui dengan loging ulang<br />`
+         msg   = `${rkls}<br/>Halo ${name} [ ${nim} ] kelas sudah di simpan, anda bisa perbarui dengan loging ulang<br />`
       }
    }
    res.render('main', {
@@ -242,9 +242,10 @@ app.route('/show-log').post(async (req, res) => {
    var nim = req.body.nim
    if(nim){
       var data = (await getObject(s3log))[nim]
-      if(data)
-         msg = data.join('<br />')
-      else
+      if(Object.keys(data).length !== 0){
+         msg = data.map(x => `<li>${x.mk}: ${x.msg}</li>`).join('\n')
+         msg = `<ul>${msg}</ul>`
+      }else
          msg = 'aktivitas belum ada'
    }
    res.render('main', {
