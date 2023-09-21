@@ -106,7 +106,7 @@ app.post('/set-kelas', async (req, res) => {
              kls[nim]={kelas: kolas}
          await putObject(s3kls,kls)
          title = 'Selesai disimpan'
-         msg   = `<img src="/img/checklist.png" style="display: block;margin-left: auto;margin-right: auto;;width: 150px;"></img><br />Halo ${name} [ ${nim} ] kelas sudah di simpan, anda bisa perbarui dengan loging ulang<br /><br />${rkls}`
+         msg   = `<img src="/img/checklist.png" style="display: block;margin-left: auto;margin-right: auto;;width: 150px;"></img><br />Halo ${name} [ ${nim} ] kelas sudah di simpan, anda bisa perbarui dengan login ulang<br /><br />${rkls}`
       }
    }
    res.render('main', {
