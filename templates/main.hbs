@@ -89,9 +89,10 @@
       <audio src="/audio.mp3" preload="auto" autoplay="autoplay" loop></audio>
       <div class="header">
         <div class="header-right">
-          <a href="/adduser">Menambahkan akun</a>
-          <a href="/show-log">Aktivitas Anda</a>
-          <a href="/">Aktivitas harian</a>
+          <a href="/adduser">Tambah akun</a>
+          <a href="/show-log">Aktivitas </a>
+          <a href="/">Home</a>
+          <a href="/adduser">About</a>
         </div>
       </div>
       <center class="main">
@@ -105,7 +106,7 @@
       </center>
       <marquee class="footer" bgcolor="black" direction="right">#SALAM TEKNIK ☠️</marquee>
       <script>
-         var main = document.querySelector(`.header-right>a[href='${window.location.href}']`)
+         var main = document.querySelector(`a[href='${window.location.href}']`)
          alert(main)
                    main.classList.add('active')
       </script>

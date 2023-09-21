@@ -166,6 +166,7 @@ app.route('/adduser').post(async (req, res) => {
       title:'Login Siakad',
       html:`
          <quote>patama'i akunmu sodara ( silahkan masukkan akun anda )</quote>
+         <br />
          <form method="POST" enctype="multipart/form-data" autocomplete="off">
             <input type="text" name="nim" placeholder="username/nim"></input>
             <br />
@@ -281,6 +282,18 @@ app.get('/show-user', async (req, res) => {
       res.json(data)
    }
    res.send('')
+})
+
+app.get('/about', (req, res) => {
+   res.render('main', {
+      title='About',
+      html=`<span>
+         Aplikasi ini adalah alat absensi otomatis dengan menggunakan sistem live check pada web 'siakad.unsulbar.ac.id' dibuat untuk mahasiswa/i yang sering terlewat absensi di siakad karena faktor lupa, hilang jaringan, dll
+         <a style="font-size: 12px;text-decoration:none;color:black;" href="https://instagram.com/ikbal.rdmc__">
+            <i> ~ by <u>@ikbal.rdmc__</u></i>
+         </a>
+      </span>`
+   })
 })
 
 app.listen(process.env.PORT || 3000, async () => {
