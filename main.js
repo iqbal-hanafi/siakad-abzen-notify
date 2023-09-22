@@ -208,7 +208,7 @@ app.get('/sync-absen', async (req, res) => {
 
       console.log(`${akun.nama}: ${log.msg}`)
 
-      if(log.msg !== 'expired' && log.eror){
+      if(log.msg !== 'expired' && !log.eror){
         if(await headObject(s3log)){
           var dataLog      = await getObject(s3log)
               dataLog[akun.nim] = [...(dataLog[akun.nim] || []), log]
