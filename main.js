@@ -29,12 +29,17 @@ const s3kls = {
    Bucket
 }
 
+const s3nwa = {
+   Key: 'notif-wa',
+   Bucket
+}
+
 const express = require('express')
 const bodyParser = require('body-parser')
-const app     = express()
+const app = express()
 
 const { login, getKls, absen } = require('./absen.js')
-const wa    = require('./wa.js')
+const wa = require('./wa.js')
 
 var multer = require('multer')
 var upload = multer()
@@ -123,6 +128,7 @@ app.route('/adduser').post(async (req, res) => {
    var msgResult = ''
    var nim = (req.body.nim || '')
    var pw  = (req.body.pw || '')
+   var nwa = (req.body.wa || '')
    if(!nim.length  && !pw.length)
       msgResult = 'isi dengan benar'
    else {
@@ -155,7 +161,7 @@ app.route('/adduser').post(async (req, res) => {
                </form>
                <br />
                `
-               dataAkun[nim] = {...data, nim, pw}
+               dataAkun[nim] = {...data, nim, pw, nwa}
                await putObject(s3dt, dataAkun)
 
                msgResult = `Hallo ${data.nama}`
@@ -184,6 +190,9 @@ app.route('/adduser').post(async (req, res) => {
             <input type="text" name="nim" placeholder="username/nim"></input>
             <br />
             <br />
+            <input type="phone" name="wa" placeholder="nomor wa untuk notifikasi"></input>
+            <br />
+            <br />
             <input type="password" name="pw" placeholder="password"></input>
             <br />
             <br />
@@ -192,6 +201,7 @@ app.route('/adduser').post(async (req, res) => {
       `
    })
 })
+
 
 app.get('/sync-absen', async (req, res) => {
    var dataSync = await getObject(s3sync)
@@ -202,6 +212,7 @@ app.get('/sync-absen', async (req, res) => {
 
    for(akun in dataSync){
       var akun = dataSync[akun]
+      var nwa  = akun.nwa
       var kls  = await getObject(s3kls)
           kls  = kls[akun.nim]
       if(!kls) continue
@@ -216,6 +227,7 @@ app.get('/sync-absen', async (req, res) => {
          dataLogt.time = tNow.getDate()
       }
       if(log.msg === 'melakukan presensi otomatis'){
+       // notifikasi wa
        var dataLog      = await getObject(s3log)
            dataLog[akun.nim] = [...(dataLog[akun.nim] || []), ...log.data]
        await putObject(s3log, dataLog)
@@ -224,8 +236,7 @@ app.get('/sync-absen', async (req, res) => {
          log:  log.data,
          time: `${tNow.getHours()}:${tNow.getMinutes()}:${tNow.getSeconds()}`
        })
-      }
-      else if(log.msg === 'expired'){
+      } else if(log.msg === 'expired'){
           var akn = await login(akun.nim, akun.pw)
           var data     = await getObject(s3dt)
               data[akun.nim] = {...akun,...akn}
