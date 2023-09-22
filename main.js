@@ -211,7 +211,7 @@ app.get('/sync-absen', async (req, res) => {
       if(log.msg === 'melakukan presensi otomatis'){
         if(await headObject(s3log)){
           var dataLog      = await getObject(s3log)
-              dataLog[akun.nim] = [...(dataLog[akun.nim] || []), log.data]
+              dataLog[akun.nim] = [...(dataLog[akun.nim] || []), ...log.data]
           await putObject(s3log, dataLog)
         }
         if(await headObject(s3logt)){
