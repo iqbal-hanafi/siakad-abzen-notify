@@ -207,8 +207,8 @@ app.get('/sync-absen', async (req, res) => {
       var log = await absen(akun.kuki, kls.kelas)
 
       console.log(`${akun.nama}: ${log.msg}`)
-
-      if(log.msg !== 'expired' && !log.eror){
+      console.log(log)
+      if(log.msg !== 'expired' && log.success){
         if(await headObject(s3log)){
           var dataLog      = await getObject(s3log)
               dataLog[akun.nim] = [...(dataLog[akun.nim] || []), log]
@@ -221,12 +221,12 @@ app.get('/sync-absen', async (req, res) => {
             dataLogt.data = []
             dataLogt.time = tNow.getDate()
           }
-          console.log(dataLogt)
           dataLogt.data.push({
             nama: akun.nama,
             log:  log.data,
             time: `${tNow.getHours()}:${tNow.getMinutes()}:${tNow.getSeconds()}`
           })
+          console.log(dataLogt)
           await putObject(s3logt, dataLogt)
         }
       }
