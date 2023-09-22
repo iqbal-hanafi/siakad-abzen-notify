@@ -106,13 +106,11 @@ app.post('/set-kelas', async (req, res) => {
          kolas[dt.id] = dt.mk
       }
       rkls += '</ul>'
-      if(await headObject(s3kls)){
-         var kls = await getObject(s3kls)
-             kls[nim]={kelas: kolas}
-         await putObject(s3kls,kls)
-         title = 'Selesai disimpan'
-         msg   = `<img src="/img/checklist.png" style="display: block;margin-left: auto;margin-right: auto;;width: 150px;"></img><br />Halo <b>${name}</b> ( ${nim} ) kelas sudah di simpan, anda bisa perbarui dengan login ulang<br /><br />${rkls}`
-      }
+      var kls = await getObject(s3kls)
+          kls[nim]={kelas: kolas}
+      await putObject(s3kls,kls)
+      title = 'Selesai disimpan'
+      msg   = `<img src="/img/checklist.png" style="display: block;margin-left: auto;margin-right: auto;;width: 150px;"></img><br />Halo <b>${name}</b> ( ${nim} ) kelas sudah di simpan, anda bisa perbarui dengan login ulang<br /><br />${rkls}`
    }
    res.render('main', {
       title,
@@ -128,49 +126,47 @@ app.route('/adduser').post(async (req, res) => {
    if(!nim.length  && !pw.length)
       msgResult = 'isi dengan benar'
    else {
-      if(await headObject(s3dt)){
-         var dataAkun = await getObject(s3dt)
-         var data     = {}
-         if(dataAkun[nim] && dataAkun[nim].pw == pw)
-            data = dataAkun[nim]
-         else
-            data = await login(nim, pw)
-         if(data.nama && data.kuki){
-            while(true){
-               var kls = await getKls(data.kuki)
-               var klsb  = await getObject(s3kls)
-                   klsb  = ((klsb[nim] && klsb[nim].kelas) || {})
+      var dataAkun = await getObject(s3dt)
+      var data     = {}
+      if(dataAkun[nim] && dataAkun[nim].pw == pw)
+         data = dataAkun[nim]
+      else
+         data = await login(nim, pw)
+      if(data.nama && data.kuki){
+         while(true){
+            var kls = await getKls(data.kuki)
+            var klsb  = await getObject(s3kls)
+                klsb  = ((klsb[nim] && klsb[nim].kelas) || {})
 
-               if(kls.success && kls.data !== []){
-                  var checkbox_kls = kls.data.map(x => `<label><input name="kelas[]" value="${escape(JSON.stringify(x))}" type="checkbox" id="${x.id}"${klsb[x.id] ? ' checked': ''}>${x.mk}</label>`).join('\n')
-                  form = `
-                  Silahkan pilih kelas yg ingin di presensi otomatis
+            if(kls.success && kls.data !== []){
+               var checkbox_kls = kls.data.map(x => `<label><input name="kelas[]" value="${escape(JSON.stringify(x))}" type="checkbox" id="${x.id}"${klsb[x.id] ? ' checked': ''}>${x.mk}</label>`).join('\n')
+               form = `
+               Silahkan pilih kelas yg ingin di presensi otomatis
+               <br />
+               <br />
+               <form style="padding: 30px;text-align: left" method="POST" action="/set-kelas" enctype="multipart/form-data">
+                  ${checkbox_kls}
+                  <input type="hidden" name="nim" value="${nim}"></input>
+                  <input type="hidden" name="name" value="${data.nama}"></input>
                   <br />
                   <br />
-                  <form style="padding: 30px;text-align: left" method="POST" action="/set-kelas" enctype="multipart/form-data">
-                     ${checkbox_kls}
-                     <input type="hidden" name="nim" value="${nim}"></input>
-                     <input type="hidden" name="name" value="${data.nama}"></input>
-                     <br />
-                     <br />
-                     <br />
-                     <button type="submit">Simpan</button>
-                  </form>
                   <br />
-                  `
-                  dataAkun[nim] = {...data, nim, pw}
-                  await putObject(s3dt, dataAkun)
+                  <button type="submit">Simpan</button>
+               </form>
+               <br />
+               `
+               dataAkun[nim] = {...data, nim, pw}
+               await putObject(s3dt, dataAkun)
 
-                  msgResult = `Hallo ${data.nama}`
+               msgResult = `Hallo ${data.nama}`
 
-                  break
-               } else if(kls.msg === 'expired') {
-                  data = await login(nim, pw)
-               }
+               break
+            } else if(kls.msg === 'expired') {
+               data = await login(nim, pw)
             }
-         } else if(data == 'invalid')
-            msgResult = `gagal menambahkan '${nim}' & '${pw}' karena akun tidak ditemukan`
-      }
+         }
+      } else if(data == 'invalid')
+         msgResult = `gagal menambahkan '${nim}' & '${pw}' karena akun tidak ditemukan`
    }
    res.render('main', {
       title:msgResult,
@@ -213,37 +209,31 @@ app.get('/sync-absen', async (req, res) => {
       log = await absen(akun.kuki, kls.kelas)
 
       console.log(`${akun.nama}: ${log.msg}`)
+      var dataLogt = await getObject(s3logt)
+      var tNow     = (new Date())
+      if(dataLogt.time !== tNow.getDate()){
+         dataLogt.data = []
+         dataLogt.time = tNow.getDate()
+      }
       if(log.msg === 'melakukan presensi otomatis'){
-        if(await headObject(s3log)){
-          var dataLog      = await getObject(s3log)
-              dataLog[akun.nim] = [...(dataLog[akun.nim] || []), ...log.data]
-          await putObject(s3log, dataLog)
-        }
-        if(await headObject(s3logt)){
-          var dataLogt = await getObject(s3logt)
-          var tNow     = (new Date())
-          if(dataLogt.time !== tNow.getDate()){
-            dataLogt.data = []
-            dataLogt.time = tNow.getDate()
-          }
-          dataLogt.data.push({
-            nama: akun.nama,
-            log:  log.data,
-            time: `${tNow.getHours()}:${tNow.getMinutes()}:${tNow.getSeconds()}`
-          })
-          await putObject(s3logt, dataLogt)
-        }
+       var dataLog      = await getObject(s3log)
+           dataLog[akun.nim] = [...(dataLog[akun.nim] || []), ...log.data]
+       await putObject(s3log, dataLog)
+       dataLogt.data.push({
+         nama: akun.nama,
+         log:  log.data,
+         time: `${tNow.getHours()}:${tNow.getMinutes()}:${tNow.getSeconds()}`
+       })
       }
       else if(log.msg === 'expired'){
-         var akn = await login(akun.nim, akun.pw)
-         if(await headObject(s3dt)){
-             var data     = await getObject(s3dt)
-                 data[akun.nim] = {...akun,...akn}
-                 dataSync[akun.nim] = {...akun,...akn}
-             await putObject(s3dt, data)
-         }
+          var akn = await login(akun.nim, akun.pw)
+          var data     = await getObject(s3dt)
+              data[akun.nim] = {...akun,...akn}
+              dataSync[akun.nim] = {...akun,...akn}
+          await putObject(s3dt, data)
       }else
          delete dataSync[akun.nim]
+      await putObject(s3logt, dataLogt)
       break
    }
 
@@ -260,7 +250,6 @@ app.route('/show-log').post(async (req, res) => {
    var msg = ''
    if(nim){
       var data = ((await getObject(s3log))[nim] || [])
-      console.log(data)
       if(data.length !== 0){
          msg = data.map(x => `<li>${x.mk}: ${x.msg}</li>`).join('\n')
          msg = `<ul>${msg}</ul>`
@@ -286,23 +275,19 @@ app.route('/show-log').post(async (req, res) => {
 
 app.get('/', async (req, res) => {
    var msg = ''
-   if(await headObject(s3logt)){
-      var dataLogt = await getObject(s3logt)
-      if(dataLogt.data)
-         for(dt of dataLogt.data)
-            for(dtt of dt.log)
-               msg += `<li>${dt.nama} - ${dtt.mk}:${dtt.msg} - (${dt.time})</li>`
-   }
-   if(await headObject(s3dt)){
-      var data = await getObject(s3dt)
-      if(Object.keys(data).length)
-         msg += '<hr/><br /><h2>Daftar Pengguna</h2><br/><ul>'
-         for(dt in data){
-            dt = data[dt]
-            msg += `<li>${dt.nama} (${dt.nim.slice(0,5)}***)</li>`
-         }
-         msg += '</ul>'
-   }
+   var dataLogt = await getObject(s3logt)
+   if(dataLogt.data)
+      for(dt of dataLogt.data)
+         for(dtt of dt.log)
+            msg += `<li>${dt.nama} - ${dtt.mk}:${dtt.msg} - (${dt.time})</li>`
+   var data = await getObject(s3dt)
+   if(Object.keys(data).length)
+      msg += '<hr/><br /><h2>Daftar Pengguna</h2><br/><ul>'
+      for(dt in data){
+         dt = data[dt]
+         msg += `<li>${dt.nama} (${dt.nim.slice(0,5)}***)</li>`
+      }
+      msg += '</ul>'
 
    res.render('main', {
       title:'Riwayat Hari ini',
