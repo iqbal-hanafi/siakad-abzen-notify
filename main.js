@@ -221,6 +221,7 @@ app.get('/sync-absen', async (req, res) => {
             dataLogt.data = []
             dataLogt.time = tNow.getDate()
           }
+          console.log(dataLogt)
           dataLogt.data.push({
             nama: akun.nama,
             log:  log.data,
