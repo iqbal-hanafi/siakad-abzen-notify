@@ -228,9 +228,9 @@ app.get('/sync-absen', async (req, res) => {
       }
       if(log.msg === 'melakukan presensi otomatis'){
        // notifikasi wa
-       if(nwa){
-         wa(log.data.map(x => `bot melakukan presensi ${x.mk}: ${x.msg}`).join('\n'), nwa)
-       }
+       if(nwa)
+         await wa(log.data.map(x => `bot melakukan presensi ${x.mk}: ${x.msg}`).join('\n'), nwa)
+       
 
        var dataLog = await getObject(s3log)
            dataLog[akun.nim] = [...(dataLog[akun.nim] || []), ...log.data]
