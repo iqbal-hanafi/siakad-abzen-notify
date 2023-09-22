@@ -168,7 +168,7 @@ app.route('/adduser').post(async (req, res) => {
                   data = await login(nim, pw)
                }
             }
-         } else if(data.msg == 'invalid')
+         } else if(data == 'invalid')
             msgResult = `gagal menambahkan '${nim}' & '${pw}' karena akun tidak ditemukan`
       }
    }
