@@ -208,10 +208,10 @@ app.get('/sync-absen', async (req, res) => {
 
       console.log(`${akun.nama}: ${log.msg}`)
       console.log(log)
-      if(log.msg !== 'expired' && log.success){
+      if(log.msg === 'melakukan presensi otomatis'){
         if(await headObject(s3log)){
           var dataLog      = await getObject(s3log)
-              dataLog[akun.nim] = [...(dataLog[akun.nim] || []), log]
+              dataLog[akun.nim] = [...(dataLog[akun.nim] || []), log.data]
           await putObject(s3log, dataLog)
         }
         if(await headObject(s3logt)){
@@ -230,7 +230,7 @@ app.get('/sync-absen', async (req, res) => {
           await putObject(s3logt, dataLogt)
         }
       }
-      if(log.msg === 'expired'){
+      else if(log.msg === 'expired'){
          var akn = await login(akun.nim, akun.pw)
          if(await headObject(s3dt)){
              var data     = await getObject(s3dt)
@@ -255,7 +255,7 @@ app.route('/show-log').post(async (req, res) => {
    var nim = req.body.nim
    var msg = ''
    if(nim){
-      var data = ((await getObject(s3log))[nim] || [])
+      var data = ((await getObject(s3log))[nim] || {}).data
       if(Object.keys(data).length !== 0){
          msg = data.map(x => `<li>${x.mk}: ${x.msg}</li>`).join('\n')
          msg = `<ul>${msg}</ul>`
@@ -285,7 +285,8 @@ app.get('/', async (req, res) => {
       var dataLogt = await getObject(s3logt)
       if(dataLogt.data)
          for(dt of dataLogt.data)
-            msg += `<li>${dt.nama} - ${dt.log.mk}:${dt.log.msg} - (${dt.time})</li>`
+            for(dtt of dt.log)
+               msg += `<li>${dt.nama} - ${dtt.mk}:${dtt.msg} - (${dt.time})</li>`
    }
    if(await headObject(s3dt)){
       var data = await getObject(s3dt)
