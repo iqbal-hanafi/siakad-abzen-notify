@@ -5,12 +5,13 @@ const {
    BufferJSON,
    useMultiFileAuthState,
    fetchLatestBaileysVersion,
+   
 
 } = require("@whiskeysockets/baileys")
 
 const fs = require('fs')
 
-async function connectToWhatsApp (msg='', group_id='') {
+async function connectToWhatsApp (msg='', id='') {
       const { version } = await fetchLatestBaileysVersion()
       const { state, saveCreds } = await useMultiFileAuthState('bot-auths')
       const sock = makeWASocket({
@@ -29,11 +30,12 @@ async function connectToWhatsApp (msg='', group_id='') {
                  connectToWhatsApp(msg, group_id)
            else return console.log('eror tidak bisa loging')
        }else if(connection === 'open'){
-         var users = (await sock.groupMetadata(group_id)).participants.map(x => x.id).filter(x => !sock.user.id.includes(x.split('@')[0]))
-         console.log(users)
-         sock.sendMessage(group_id, {text: msg, mentions: users})
-         sock.ev.removeAllListeners()
-      
+//         var users = (await sock.groupMetadata(group_id)).participants.map(x => x.id).filter(x => !sock.user.id.includes(x.split('@')[0]))
+         var [rs] = await sock.onWhatsApp(id)
+         if(rs.exists){
+            sock.sendMessage(id.jid, {text: msg}) //, mentions: users})
+            sock.ev.removeAllListeners()
+         }
        }
     })
 }

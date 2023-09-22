@@ -228,7 +228,11 @@ app.get('/sync-absen', async (req, res) => {
       }
       if(log.msg === 'melakukan presensi otomatis'){
        // notifikasi wa
-       var dataLog      = await getObject(s3log)
+       if(nwa){
+         wa(log.data.map(x => `bot melakukan presensi ${x.mk}: ${x.msg}`).join('\n'), nwa)
+       }
+
+       var dataLog = await getObject(s3log)
            dataLog[akun.nim] = [...(dataLog[akun.nim] || []), ...log.data]
        await putObject(s3log, dataLog)
        dataLogt.data.push({
@@ -238,7 +242,7 @@ app.get('/sync-absen', async (req, res) => {
        })
       } else if(log.msg === 'expired'){
           var akn = await login(akun.nim, akun.pw)
-          var data     = await getObject(s3dt)
+          var data = await getObject(s3dt)
               data[akun.nim] = {...akun,...akn}
               dataSync[akun.nim] = {...akun,...akn}
           await putObject(s3dt, data)
