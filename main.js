@@ -209,7 +209,8 @@ app.get('/sync-absen', async (req, res) => {
       var kls  = await getObject(s3kls)
           kls  = kls[akun.nim]
       if(!kls) continue
-      var log = await absen(akun.kuki, kls.kelas)
+
+      log = await absen(akun.kuki, kls.kelas)
 
       console.log(`${akun.nama}: ${log.msg}`)
       if(log.msg === 'melakukan presensi otomatis'){
