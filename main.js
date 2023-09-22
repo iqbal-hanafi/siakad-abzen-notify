@@ -29,7 +29,6 @@ const s3kls = {
    Bucket
 }
 
-
 const express = require('express')
 const bodyParser = require('body-parser')
 const app     = express()
@@ -209,7 +208,6 @@ app.get('/sync-absen', async (req, res) => {
       var log = await absen(akun.kuki, kls.kelas)
 
       console.log(`${akun.nama}: ${log.msg}`)
-      console.log(log)
       if(log.msg === 'melakukan presensi otomatis'){
         if(await headObject(s3log)){
           var dataLog      = await getObject(s3log)
@@ -228,7 +226,6 @@ app.get('/sync-absen', async (req, res) => {
             log:  log.data,
             time: `${tNow.getHours()}:${tNow.getMinutes()}:${tNow.getSeconds()}`
           })
-          console.log(dataLogt)
           await putObject(s3logt, dataLogt)
         }
       }
@@ -257,8 +254,8 @@ app.route('/show-log').post(async (req, res) => {
    var nim = req.body.nim
    var msg = ''
    if(nim){
-      var data = ((await getObject(s3log))[nim] || {})
-      if(Object.keys(data.data || {}).length !== 0){
+      var data = ((await getObject(s3log))[nim] || {}).data
+      if(data){
          msg = data.map(x => `<li>${x.mk}: ${x.msg}</li>`).join('\n')
          msg = `<ul>${msg}</ul>`
          title = `Aktivitas Anda`
@@ -321,5 +318,5 @@ app.get('/about', (req, res) => {
 })
 
 app.listen(process.env.PORT || 3000, async () => {
-  console.log(`Example app listening http://127.0.0.1:3000`)
+  console.log(`Example app listening http://127.0.0.1:${(process.env.PORT || 3000)}`)
 })
