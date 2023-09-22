@@ -259,9 +259,9 @@ app.route('/show-log').post(async (req, res) => {
    var nim = req.body.nim
    var msg = ''
    if(nim){
-      var data = ((await getObject(s3log))[nim] || {})
+      var data = ((await getObject(s3log))[nim] || [])
       console.log(data)
-      if(data){
+      if(data.length !== 0){
          msg = data.map(x => `<li>${x.mk}: ${x.msg}</li>`).join('\n')
          msg = `<ul>${msg}</ul>`
          title = `Aktivitas Anda`
