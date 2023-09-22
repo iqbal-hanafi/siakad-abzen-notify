@@ -88,6 +88,10 @@ async function getObject(params){
    }
 }
 
+app.get('/clear/:key', async (req, res) => {
+   res.json(await s3.deleteObject({Key: req.params.key, Bucket}).promise())
+})
+
 app.post('/set-kelas', async (req, res) => {
    var kelas = req.body.kelas
    var nim   = req.body.nim
