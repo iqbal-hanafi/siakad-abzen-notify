@@ -83,7 +83,7 @@ app.route('/adduser').post(async (req, res) => {
                </form>
                <br />
                `
-               dataAkun[nim] = {...data, nim, pw, nwa}
+               dataAkun[nim] = {...data, nim, pw}
                await putObject(s3dt, dataAkun)
 
                msgResult = `Hallo ${data.nama}`
