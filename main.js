@@ -9,6 +9,7 @@ const app = express()
 const { login, getKls, absen } = require('./absen.js')
 const { deleteObject, getObject, putObject, headObject } = require('./db.js')
 const { nim_admin, s3kls, s3qrwa, s3dt, s3log, s3logt, s3sync } = require('./config.js')
+const { s3 } = require('./db.js')
 
 const Wa = require('./wa.js')
 
@@ -79,15 +80,13 @@ app.route('/adduser').post(async (req, res) => {
                form = `
                Silahkan pilih kelas yg ingin di presensi otomatis
                <br />
-               <br />
                <form style="padding: 30px;text-align: left" method="POST" action="/set-kelas" enctype="multipart/form-data">
                   ${checkbox_kls}
                   <input type="hidden" name="nim" value="${nim}"></input>
                   <input type="hidden" name="name" value="${data.nama}"></input>
                   <br />
                   <br />
-                  <br />
-                  <button type="submit">Simpan</button>
+                  <button type="submit">Simpan Kelas</button>
                </form>
                <br />
                `
