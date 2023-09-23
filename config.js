@@ -24,8 +24,13 @@ const s3kls = {
    Bucket
 }
 
+const s3wab = {
+   Key: 'wa-bot',
+   Bucket
+}
+
 const nim_admin = 'D0121505'
 
 module.exports = {
-   s3dt, s3log, s3kls, s3logt, s3sync, nim_admin, Bucket
+   s3wab, s3dt, s3log, s3kls, s3logt, s3sync, nim_admin, Bucket
 }
