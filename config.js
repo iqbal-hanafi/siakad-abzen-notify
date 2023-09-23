@@ -32,5 +32,5 @@ const s3qrwa = {
 const nim_admin = 'D0121505'
 
 module.exports = {
-   s3dt, s3log, s3kls, s3qrwa, s3logt, s3sync, nim_admin
+   s3dt, s3log, s3kls, s3qrwa, s3logt, s3sync, nim_admin, Bucket
 }

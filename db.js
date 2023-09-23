@@ -49,6 +49,5 @@ async function getObject(params){
 
 
 module.exports = {
-   getObject, headObject, putObject, deleteObject,
-   Bucket, s3
+   getObject, headObject, putObject, deleteObject, s3
 }
