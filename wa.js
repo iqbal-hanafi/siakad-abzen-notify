@@ -30,7 +30,6 @@ async function Wa () {
 
           sock.ev.on('creds.update', saveCreds)
           sock.ev.on('connection.update', async({ connection, lastDisconnect, qr }) => {
-              console.log(qr)
               if(qr)
                QRCode.toDataURL(qr, async (err, url) => {
                  console.log(url)
