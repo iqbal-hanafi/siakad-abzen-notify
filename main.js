@@ -177,12 +177,14 @@ app.get('/sync-absen', async (req, res) => {
       await putObject(s3logt, dataLogt)
       if(idwa){
          var sock = await Wa()
-         var [reswa] = await sock.onWhatsApp(idwa)
-         if(reswa.exists)
-            await sock.sendMessage(
-               reswa.jid,
-               'Halo :)'+os.EOL+log.data.map(x => `bot melakukan presensi ${x.mk}: ${x.msg}`).join(os.EOL)
-            )
+         if(sock){
+            var [reswa] = await sock.onWhatsApp(idwa)
+            if(reswa.exists)
+               await sock.sendMessage(
+                  reswa.jid,
+                  'Halo :)'+os.EOL+log.data.map(x => `bot melakukan presensi ${x.mk}: ${x.msg}`).join(os.EOL)
+               )
+         }
       }
       break
    }
