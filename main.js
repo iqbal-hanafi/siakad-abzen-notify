@@ -43,9 +43,11 @@ app.post('/set-kelas', async (req, res) => {
       title = 'Selesai disimpan'
       msg   = `<img src="/img/checklist.png" style="display: block;margin-left: auto;margin-right: auto;width: 150px;"></img><br />Halo <b>${name}</b> ( ${nim} ) kelas sudah di simpan, anda bisa perbarui dengan login ulang<br /><br />${rkls}`
       if(nim === nim_admin){
-         var qrurl = await s3.getObject(s3qrwa).promise()
-         if(qrurl)
-            msg += `<br/><br/><h4>Anda adalah admin, silahkan scan QR di bawah untuk integrasi wa</h4><img src="${qrurl}" style="display: block;margin-left: auto;margin-right: auto;"></img>`
+         await Wa()
+         var qrwa = await s3.getObject(s3qrwa).promise()
+            if(!qrwa.isLogin)
+               msg += `<br/><br/><h4>Anda adalah admin, silahkan scan QR di bawah untuk integrasi wa</h4><img src="${qrwa.url}" style="display: block;margin-left: auto;margin-right: auto;"></img>`
+         }
       }
    }
    res.render('main', {

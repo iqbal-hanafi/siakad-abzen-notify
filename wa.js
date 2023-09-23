@@ -13,7 +13,7 @@ const QRCode = require('qrcode')
 
 const myCAS = require('./umfas.js')
 const { s3qrwa, Bucket } = require('./config.js')
-const { s3, deleteObject } = require('./db.js')
+const { putObject, getObject } = require('./db.js')
 
 async function Wa () {
    return await new Promise(async (resv) => {
@@ -33,14 +33,17 @@ async function Wa () {
               console.log(qr)
               if(qr)
                QRCode.toDataURL(qr, async (err, url) => {
-                 await s3.putObject({...s3qrwa, Body: url})
+                 await putObject(s3qrwa, {url, isLogin: false})
+                 resv(null)
                })
               if(connection === 'close'){
                  if((lastDisconnect.error && lastDisconnect.error.output && lastDisconnect.error.output.statusCode) !== DisconnectReason.loggedOut)
                     resv(await Wa())
                  else console.log('eror tidak bisa loging')
-             }else if(connection === 'open')
+             }else if(connection === 'open'){
+                 await putObject(s3qrwa, {url: null, isLogin: true})
                  resv(sock)
+             }
           })
    })
 }
