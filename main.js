@@ -1,5 +1,7 @@
 process.env.TZ = 'Asia/Makassar'
 
+const os = require('os')
+
 const express = require('express')
 const bodyParser = require('body-parser')
 const app = express()
