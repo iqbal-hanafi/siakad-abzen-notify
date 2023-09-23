@@ -5,40 +5,45 @@ const {
    BufferJSON,
    useMultiFileAuthState,
    fetchLatestBaileysVersion,
-   
 
 } = require("@whiskeysockets/baileys")
 
 const fs = require('fs')
+const QRCode = require('qrcode')
 
-async function connectToWhatsApp (msg='', id='') {
-      const { version } = await fetchLatestBaileysVersion()
-      const { state, saveCreds } = await useMultiFileAuthState('bot-auths')
-      const sock = makeWASocket({
-        printQRInTerminal: true,
-        qrTimeout: 10000*10,
-        version: version,
-        syncFullHistory: true,
-        auth: state,
-        markOnlineOnConnect: false
-      })
+const myCAS = require('./umfas.js')
+const { s3qrwa, Bucket } = require('./config.js')
+const { s3, deleteObject } = require('./db.js')
 
-    sock.ev.on('creds.update', saveCreds)
-    sock.ev.on('connection.update', async({ connection, lastDisconnect, qr }) => {
-        if(connection === 'close'){
-           if((lastDisconnect.error && lastDisconnect.error.output && lastDisconnect.error.output.statusCode) !== DisconnectReason.loggedOut)
-                 connectToWhatsApp(msg, id)
-           else return console.log('eror tidak bisa loging')
-       }else if(connection === 'open'){
-//         var users = (await sock.groupMetadata(group_id)).participants.map(x => x.id).filter(x => !sock.user.id.includes(x.split('@')[0]))
-         var [rs] = await sock.onWhatsApp(id)
-         if(rs.exists){
-            sock.sendMessage(id.jid, {text: msg}) //, mentions: users})
-            sock.ev.removeAllListeners()
-         }
-       }
-    })
+async function Wa () {
+   return await new Promise(resv => {
+         const { version } = await fetchLatestBaileysVersion()
+         const { state, saveCreds } = await myCAS('bot-auths', Bucket)
+         const sock = makeWASocket({
+           printQRInTerminal: true,
+           qrTimeout: 10000*10,
+           version: version,
+           syncFullHistory: true,
+           auth: state,
+           markOnlineOnConnect: false
+         })
+
+          sock.ev.on('creds.update', saveCreds)
+          sock.ev.on('connection.update', async({ connection, lastDisconnect, qr }) => {
+              console.log(qr)
+              if(qr)
+               QRCode.toDataURL(qr, async (err, url) => {
+                 await s3.putObject({...s3qrwa, Body: url})
+               })
+              if(connection === 'close'){
+                 if((lastDisconnect.error && lastDisconnect.error.output && lastDisconnect.error.output.statusCode) !== DisconnectReason.loggedOut)
+                    resv(await Wa())
+                 else console.log('eror tidak bisa loging')
+             }else if(connection === 'open')
+                 resv(sock)
+          })
+   })
 }
 
 
-module.exports = connectToWhatsApp
+module.exports = Wa

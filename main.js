@@ -1,45 +1,14 @@
 process.env.TZ = 'Asia/Makassar'
 
-const AWS = require('aws-sdk')
-const s3 = new AWS.S3()
-
-const Bucket = 'cyclic-cooperative-flannel-shirt-eu-west-3'
-const s3dt = {
-   Key: 'akun-ente',
-   Bucket
-}
-
-const s3log = {
-   Key: 'log',
-   Bucket
-}
-
-const s3sync = {
-   Key: 'next-user',
-   Bucket
-}
-
-const s3logt = {
-   Key: 'loga-today',
-   Bucket
-}
-
-const s3kls = {
-   Key: 'kelas',
-   Bucket
-}
-
-const s3nwa = {
-   Key: 'notif-wa',
-   Bucket
-}
-
 const express = require('express')
 const bodyParser = require('body-parser')
 const app = express()
 
 const { login, getKls, absen } = require('./absen.js')
-const wa = require('./wa.js')
+const { deleteObject, getObject, putObject, headObject } = require('./db.js')
+const { nim_admin, s3kls, s3qrwa, s3dt, s3log, s3logt, s3sync } = require('./config.js')
+
+const Wa = require('./wa.js')
 
 var multer = require('multer')
 var upload = multer()
@@ -50,52 +19,6 @@ app.set('view engine', 'hbs')
 app.use(bodyParser.urlencoded({ extended: true }))
 app.use(express.static('public'))
 app.use(upload.array())
-
-async function putObject(params, body){
-   return s3.putObject({
-      Body: JSON.stringify(body), ...params
-   }).promise()
-}
-
-async function headObject(params){
-   while(true){
-      var res = await new Promise(resv => {
-         s3.headObject(params, async (err, _) => {
-           if (err && err.code === 'NotFound') {
-             await putObject(params, {})
-             resv(false)
-           }
-           else if (err)
-             resv(false)
-           else
-             resv(true)
-         })
-      })
-      if(res) return res
-   }
-}
-
-async function getObject(params){
-   if(await headObject(params)){
-      while(true){
-         var data = await new Promise(resv => {
-            s3.getObject(params, async (err, dta) => {
-                if(err && err.code === 'NotFound')
-                  resv(false)
-                else if(err)
-                  resv(false)
-                else
-                  resv(JSON.parse(dta.Body.toString()))
-            })
-         })
-         if(data) return data
-     }
-   }
-}
-
-app.get('/clear/:key', async (req, res) => {
-   res.json(await s3.deleteObject({Key: req.params.key, Bucket}).promise())
-})
 
 app.post('/set-kelas', async (req, res) => {
    var kelas = req.body.kelas
@@ -115,7 +38,12 @@ app.post('/set-kelas', async (req, res) => {
           kls[nim]={kelas: kolas}
       await putObject(s3kls,kls)
       title = 'Selesai disimpan'
-      msg   = `<img src="/img/checklist.png" style="display: block;margin-left: auto;margin-right: auto;;width: 150px;"></img><br />Halo <b>${name}</b> ( ${nim} ) kelas sudah di simpan, anda bisa perbarui dengan login ulang<br /><br />${rkls}`
+      msg   = `<img src="/img/checklist.png" style="display: block;margin-left: auto;margin-right: auto;width: 150px;"></img><br />Halo <b>${name}</b> ( ${nim} ) kelas sudah di simpan, anda bisa perbarui dengan login ulang<br /><br />${rkls}`
+      if(nim === nim_admin){
+         var qrurl = await s3.getObject(s3qrwa).promise()
+         if(qrurl)
+            msg += `<br/><br/><h4>Anda adalah admin, silahkan scan QR di bawah untuk integrasi wa</h4><img src="${qrurl}" style="display: block;margin-left: auto;margin-right: auto;"></img>`
+      }
    }
    res.render('main', {
       title,
@@ -145,7 +73,7 @@ app.route('/adduser').post(async (req, res) => {
                 klsb  = ((klsb[nim] && klsb[nim].kelas) || {})
 
             if(kls.success && kls.data !== []){
-               var checkbox_kls = kls.data.map(x => `<label><input name="kelas[]" value="${escape(JSON.stringify(x))}" type="checkbox" id="${x.id}"${klsb[x.id] ? ' checked': ''}>${x.mk}</label>`).join('\n')
+               var checkbox_kls = kls.data.map(x => `<label><input name="kelas[]" value="${escape(JSON.stringify(x))}" type="checkbox" id="${x.id}"${klsb[x.id] ? ' checked': ''}>${x.mk}</label>`).join(os.EOL)
                form = `
                Silahkan pilih kelas yg ingin di presensi otomatis
                <br />
@@ -212,7 +140,7 @@ app.get('/sync-absen', async (req, res) => {
 
    for(akun in dataSync){
       var akun = dataSync[akun]
-      var nwa  = akun.nwa
+      var idwa = akun.nwa
       var kls  = await getObject(s3kls)
           kls  = kls[akun.nim]
       if(!kls) continue
@@ -227,11 +155,6 @@ app.get('/sync-absen', async (req, res) => {
          dataLogt.time = tNow.getDate()
       }
       if(log.msg === 'melakukan presensi otomatis'){
-       // notifikasi wa
-       if(nwa)
-         await wa(log.data.map(x => `bot melakukan presensi ${x.mk}: ${x.msg}`).join('\n'), nwa)
-       
-
        var dataLog = await getObject(s3log)
            dataLog[akun.nim] = [...(dataLog[akun.nim] || []), ...log.data]
        await putObject(s3log, dataLog)
@@ -249,11 +172,19 @@ app.get('/sync-absen', async (req, res) => {
       }else
          delete dataSync[akun.nim]
       await putObject(s3logt, dataLogt)
+      if(idwa){
+         var sock = await Wa()
+         var [reswa] = await sock.onWhatsApp(idwa)
+         if(reswa.exists)
+            await sock.sendMessage(
+               reswa.jid,
+               'Halo :)'+os.EOL+log.data.map(x => `bot melakukan presensi ${x.mk}: ${x.msg}`).join(os.EOL)
+            )
+      }
       break
    }
 
    await putObject(s3sync, dataSync)
-
    res.json(log)
 })
 
@@ -266,7 +197,7 @@ app.route('/show-log').post(async (req, res) => {
    if(nim){
       var data = ((await getObject(s3log))[nim] || [])
       if(data.length !== 0){
-         msg = data.map(x => `<li>${x.mk} [ ${x.msg} ]</li>`).join('\n')
+         msg = data.map(x => `<li>${x.mk} [ ${x.msg} ]</li>`).join(os.EOL)
          msg = `<ul>${msg}</ul>`
          title = `Aktivitas Anda`
       }else
