@@ -13,7 +13,7 @@ const QRCode = require('qrcode')
 
 const myCAS = require('./umfas.js')
 const { s3qrwa, Bucket } = require('./config.js')
-const { putObject, getObject } = require('./db.js')
+const { putObject, headObject } = require('./db.js')
 
 async function Wa () {
    return await new Promise(async (resv) => {
@@ -32,8 +32,7 @@ async function Wa () {
           sock.ev.on('connection.update', async({ connection, lastDisconnect, qr }) => {
               if(qr)
                QRCode.toDataURL(qr, async (err, url) => {
-                 console.log(url)
-                 await putObject(s3qrwa, {url, isLogin: false})
+                 console.log(await putObject(s3qrwa, {url, isLogin: false}))
                  resv(null)
                })
               if(connection === 'close'){
