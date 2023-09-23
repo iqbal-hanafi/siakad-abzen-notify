@@ -45,9 +45,9 @@ app.post('/set-kelas', async (req, res) => {
       if(nim === nim_admin){
          await Wa()
          var qrwa = await s3.getObject(s3qrwa).promise()
-            if(!qrwa.isLogin)
-               msg += `<br/><br/><h4>Anda adalah admin, silahkan scan QR di bawah untuk integrasi wa</h4><img src="${qrwa.url}" style="display: block;margin-left: auto;margin-right: auto;"></img>`
-         }
+         if(!qrwa.isLogin)
+            msg += `<br/><br/><h4>Anda adalah admin, silahkan scan QR di bawah untuk integrasi wa</h4><img src="${qrwa.url}" style="display: block;margin-left: auto;margin-right: auto;"></img>`
+      
       }
    }
    res.render('main', {
