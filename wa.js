@@ -20,7 +20,7 @@ async function Wa () {
          const { version } = await fetchLatestBaileysVersion()
          const { state, saveCreds } = await myCAS('bot-auths', Bucket)
          const sock = makeWASocket({
-           printQRInTerminal: true,
+           printQRInTerminal: false,
            qrTimeout: 10000*10,
            version: version,
            syncFullHistory: true,
@@ -33,6 +33,7 @@ async function Wa () {
               console.log(qr)
               if(qr)
                QRCode.toDataURL(qr, async (err, url) => {
+                 console.log(url)
                  await putObject(s3qrwa, {url, isLogin: false})
                  resv(null)
                })
