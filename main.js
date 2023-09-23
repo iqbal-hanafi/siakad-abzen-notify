@@ -8,7 +8,7 @@ const app = express()
 
 const { login, getKls, absen } = require('./absen.js')
 const { deleteObject, getObject, putObject, headObject } = require('./db.js')
-const { nim_admin, s3kls, s3qrwa, s3dt, s3log, s3logt, s3sync } = require('./config.js')
+const { nim_admin, s3kls, s3dt, s3log, s3logt, s3sync } = require('./config.js')
 const { s3 } = require('./db.js')
 
 const Wa = require('./wa.js')
@@ -43,11 +43,12 @@ app.post('/set-kelas', async (req, res) => {
       title = 'Selesai disimpan'
       msg   = `<img src="/img/checklist.png" style="display: block;margin-left: auto;margin-right: auto;width: 150px;"></img><br />Halo <b>${name}</b> ( ${nim} ) kelas sudah di simpan, anda bisa perbarui dengan login ulang<br /><br />${rkls}`
       if(nim === nim_admin){
-         console.log(await Wa())
-         var qrwa = await s3.getObject(s3qrwa).promise()
-         console.log(qrwa.url)
-         if(!qrwa.isLogin)
-            msg += `<br/><h4 style="text-align:center;">Kamu admin, silahkan scan QR di bawah untuk integrasi bot WA</h4><img src="${qrwa.url}" alt="Scan Wa"></img>`
+         var qr = await new Promise(async (resv) => {
+                     await Wa(resv)
+                  })
+         console.log(qr)
+         if(qr)
+            msg += `<br/><h4 style="text-align:center;">Kamu admin, silahkan scan QR di bawah untuk integrasi bot WA</h4><img src="${qrwa.url}" alt="Scan Wa" style="display: block;margin-left: auto;margin-right: auto;padding:30px;"></img>`
       }
    }
    res.render('main', {
@@ -177,7 +178,7 @@ app.get('/sync-absen', async (req, res) => {
       await putObject(s3logt, dataLogt)
       if(idwa){
          var sock = await Wa()
-         if(sock){
+         if(sock.user){
             var [reswa] = await sock.onWhatsApp(idwa)
             if(reswa.exists)
                await sock.sendMessage(

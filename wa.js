@@ -12,10 +12,10 @@ const fs = require('fs')
 const QRCode = require('qrcode')
 
 const myCAS = require('./umfas.js')
-const { s3qrwa, Bucket } = require('./config.js')
+const { Bucket } = require('./config.js')
 const { putObject, headObject } = require('./db.js')
 
-async function Wa () {
+async function Wa (recvqr=null) {
    const { version } = await fetchLatestBaileysVersion()
    const { state, saveCreds } = await myCAS('bot-auths', Bucket)
    const sock = makeWASocket({
@@ -31,11 +31,11 @@ async function Wa () {
     sock.ev.on('connection.update', async({ connection, lastDisconnect, qr }) => {
         if(qr)
          QRCode.toDataURL(qr, async (err, url) => {
-           console.log(await putObject(s3qrwa, {url, isLogin: false}))
+            recvqr && recvqr(url)
          })
         if(connection === 'close'){
            if((lastDisconnect.error && lastDisconnect.error.output && lastDisconnect.error.output.statusCode) !== DisconnectReason.loggedOut)
-              Wa()
+              Wa(recvqr)
            else console.log('eror tidak bisa loging')
        }else if(connection === 'open')
            await putObject(s3qrwa, {url: null, isLogin: true})
