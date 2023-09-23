@@ -16,7 +16,7 @@ const { s3qrwa, Bucket } = require('./config.js')
 const { s3, deleteObject } = require('./db.js')
 
 async function Wa () {
-   return await new Promise(resv => {
+   return await new Promise(async (resv) => {
          const { version } = await fetchLatestBaileysVersion()
          const { state, saveCreds } = await myCAS('bot-auths', Bucket)
          const sock = makeWASocket({
