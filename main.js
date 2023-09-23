@@ -266,7 +266,7 @@ app.route('/show-log').post(async (req, res) => {
    if(nim){
       var data = ((await getObject(s3log))[nim] || [])
       if(data.length !== 0){
-         msg = data.map(x => `<li>${x.mk}: ${x.msg}</li>`).join('\n')
+         msg = data.map(x => `<li>${x.mk} [ ${x.msg} ]</li>`).join('\n')
          msg = `<ul>${msg}</ul>`
          title = `Aktivitas Anda`
       }else
@@ -294,7 +294,7 @@ app.get('/', async (req, res) => {
    if(dataLogt.data)
       for(dt of dataLogt.data)
          for(dtt of dt.log)
-            msg += `<li>${dt.nama} - ${dtt.mk}:${dtt.msg} - (${dt.time})</li>`
+            msg += `<li>${dt.nama} - ${dtt.mk} [ ${dtt.msg} ] - (${dt.time})</li>`
    var data = await getObject(s3dt)
    if(Object.keys(data).length)
       msg += '<hr/><br /><h2>Daftar Pengguna</h2><br/><ul>'
