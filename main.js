@@ -8,11 +8,8 @@ const app = express()
 
 const { login, getKls, absen } = require('./absen.js')
 const { deleteObject, getObject, putObject, headObject } = require('./db.js')
-const { nim_admin, s3wab, s3kls, s3dt, s3log, s3logt, s3sync } = require('./config.js')
+const { nim_admin, s3kls, s3dt, s3log, s3logt, s3sync } = require('./config.js')
 const { s3 } = require('./db.js')
-
-const Wa = require('./wa.js')
-const sockWa = Wa()
 
 var multer = require('multer')
 var upload = multer()
@@ -23,16 +20,6 @@ app.set('view engine', 'hbs')
 app.use(bodyParser.urlencoded({ extended: true }))
 app.use(express.static('public'))
 app.use(upload.array())
-
-app.post('/set-bot', async (req, res) => {
-   var linkgc = req.body.linkgc
-   var nim = req.body.nim
-   var sock = await sockWa
-   if(sock.user){
-       var resp = await sock.groupAcceptInvite(linkgc.match(/(?<=\/)([^\/]+$)/)[0])
-       console.log(resp, nim)
-   }
-})
 
 app.post('/set-kelas', async (req, res) => {
    var kelas = req.body.kelas
@@ -53,21 +40,7 @@ app.post('/set-kelas', async (req, res) => {
       await putObject(s3kls,kls)
       title = 'Selesai disimpan'
       msg   = `<img src="/img/checklist.png" style="display: block;margin-left: auto;margin-right: auto;width: 150px;"></img><br />Halo <b>${name}</b> ( ${nim} ) kelas sudah di simpan, anda bisa perbarui dengan login ulang<br /><br />${rkls}`
-      var sock = await sockWa
-      if(nim === nim_admin){
-         if(typeof sock === 'string'){
-            var qrurl = sock
-            msg += `<br/>
-                     <h4>Kamu admin, silahkan scan QR di bawah untuk integrasi bot WA</h4>
-            <img src="${qrurl}" alt="Scan Wa" style="display: block;margin-left: auto;margin-right: auto;padding:30px;"></img>`
-         }
-      } else if(sock.user){
-            msg += `<h4>Jika ingin integrasi dengan WA, silahkan masukkan link grup anda</h4><form method="/set-bot" enctype="multipart/form-data" autocomplete="off">
-               <input type="text" name="linkgc" placeholder="link grup wa anda"></input>
-               <input type="hidden" name="nim" value="${nim}"></input>
-               <button type="submit">Integrasi Wa</button>
-            </form>`
-      }
+
    }
    res.render('main', {
       title,
@@ -80,7 +53,6 @@ app.route('/adduser').post(async (req, res) => {
    var msgResult = ''
    var nim = (req.body.nim || '')
    var pw  = (req.body.pw || '')
-   var nwa = (req.body.wa || '')
    if(!nim.length  && !pw.length)
       msgResult = 'isi dengan benar'
    else {
@@ -140,9 +112,6 @@ app.route('/adduser').post(async (req, res) => {
             <input type="text" name="nim" placeholder="username/nim"></input>
             <br />
             <br />
-            <input type="phone" name="wa" placeholder="nomor wa untuk notifikasi"></input>
-            <br />
-            <br />
             <input type="password" name="pw" placeholder="password"></input>
             <br />
             <br />
@@ -162,7 +131,6 @@ app.get('/sync-absen', async (req, res) => {
 
    for(akun in dataSync){
       var akun = dataSync[akun]
-      var idwa = akun.nwa
       var kls  = await getObject(s3kls)
           kls  = kls[akun.nim]
       if(!kls) continue
@@ -194,17 +162,6 @@ app.get('/sync-absen', async (req, res) => {
       }else
          delete dataSync[akun.nim]
       await putObject(s3logt, dataLogt)
-      if(idwa){
-         var sock = await Wa()
-         if(sock.user){
-            var [reswa] = await sock.onWhatsApp(idwa)
-            if(reswa.exists)
-               await sock.sendMessage(
-                  reswa.jid,
-                  'Halo :)'+os.EOL+log.data.map(x => `bot melakukan presensi ${x.mk}: ${x.msg}`).join(os.EOL)
-               )
-         }
-      }
       break
    }
 
