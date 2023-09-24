@@ -153,7 +153,9 @@ app.get('/sync-absen', async (req, res) => {
          log:  log.data,
          time: `${tNow.getHours()}:${tNow.getMinutes()}:${tNow.getSeconds()}`
        })
-      } else if(log.msg === 'expired'){
+      }
+
+      if(log.msg === 'expired'){
           var akn = await login(akun.nim, akun.pw)
           var data = await getObject(s3dt)
               data[akun.nim] = {...akun,...akn}
