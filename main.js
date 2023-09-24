@@ -128,6 +128,7 @@ app.get('/sync-absen', async (req, res) => {
       var dataSync = await getObject(s3dt)
 
    var log = null
+   var count = 2
 
    for(akun in dataSync){
       var akun = dataSync[akun]
@@ -161,10 +162,14 @@ app.get('/sync-absen', async (req, res) => {
               data[akun.nim] = {...akun,...akn}
               dataSync[akun.nim] = {...akun,...akn}
           await putObject(s3dt, data)
+          break
       }else
          delete dataSync[akun.nim]
+
       await putObject(s3logt, dataLogt)
-      break
+
+      if(count === 0) break
+      else count = count - 1
    }
 
    await putObject(s3sync, dataSync)
