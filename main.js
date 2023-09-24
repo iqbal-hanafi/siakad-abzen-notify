@@ -211,9 +211,23 @@ app.get('/', async (req, res) => {
    var msg = ''
    var dataLogt = await getObject(s3logt)
    if(dataLogt.data)
+      msg += `<br /><table>
+      <tr>
+         <th>Nama</th>
+         <th>Matkul</th>
+         <th>Informasi</th>
+         <th>Waktu</th>
+      </tr>
+      `
       for(dt of dataLogt.data)
          for(dtt of dt.log)
-            msg += `<li>${dt.nama} - ${dtt.mk} [ ${dtt.msg} ] - (${dt.time})</li>`
+            msg += `<tr>
+               <td>${dt.nama}</td>
+               <td>${dtt.mk}</td>
+               <td>${dtt.msg}</td>
+               <td>${dt.time}</td>
+            </tr>`
+      msg += `</table><br/>`
    var data = await getObject(s3dt)
    if(Object.keys(data).length)
       msg += '<hr/><br /><h2>Daftar Pengguna</h2><br/><ul>'
