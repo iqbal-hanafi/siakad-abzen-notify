@@ -210,8 +210,9 @@ app.route('/show-log').post(async (req, res) => {
 app.get('/', async (req, res) => {
    var msg = ''
    var dataLogt = await getObject(s3logt)
+   var date = (new Date()).toLocaleString('id-ID', {dateStyle:'full'})
    if(dataLogt.data)
-      msg += `<br /><table>
+      msg += `Riwayat presensi otomatis pada tanggal ${date}<br/><table>
       <tr>
          <th>Nama</th>
          <th>Matkul</th>
@@ -230,7 +231,7 @@ app.get('/', async (req, res) => {
       msg += `</table><br/>`
    var data = await getObject(s3dt)
    if(Object.keys(data).length)
-      msg += '<hr/><br /><h2>Daftar Pengguna</h2><br/><ul>'
+      msg += '<br /><h2>Daftar Pengguna</h2><br/><ul>'
       for(dt in data){
          dt = data[dt]
          msg += `<li>${dt.nama} (${dt.nim.slice(0,5)}***)</li>`
