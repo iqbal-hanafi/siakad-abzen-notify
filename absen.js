@@ -81,7 +81,8 @@ async function absen(kuki, mkL){
                            // notif absen dibuka
                            var setabsen = parse(b).querySelector('form')
                            var acturl = setabsen.getAttribute('action')
-                           var data = {};
+                           var data = {}
+                           var waktu = (new Date()).toLocaleString('id-ID', {dateStyle:'medium',timeStyle: 'long'})
                            for(inp of setabsen.querySelectorAll('input'))
                               data[
                                   inp.getAttribute('name')
@@ -89,7 +90,7 @@ async function absen(kuki, mkL){
                            absenreq.post(acturl,(e,r,b) => {
                               console.log(b)
                            }).form(data)
-                           resv({mk, msg})
+                           resv({mk, msg, waktu})
                         }
                      }
                      resv({})

@@ -185,9 +185,24 @@ app.route('/show-log').post(async (req, res) => {
    if(nim){
       var data = ((await getObject(s3log))[nim] || [])
       if(data.length !== 0){
-         msg = data.map(x => `<li>${x.mk} [ ${x.msg} ]</li>`).join(os.EOL)
-         msg = `<ul>${msg}</ul>`
-         title = `Aktivitas Anda`
+         msg = data.map(x => `<tr>
+                 <td>${x.mk}</td>
+                 <td>${x.msg}</td>
+                 <td>${x.waktu}</td>
+         </tr>`).join(os.EOL)
+         msg = `<br/><table>
+                  <thead>
+                     <tr>
+                        <th>Matkul</th>
+                        <th>Informasi</th>
+                        <th>Waktu</th>
+                     </tr>
+                  </thead>
+                  <tbody>
+                     ${msg}
+                  </tbody>
+                </table>`
+         title = `Aktivitas Anda (${nim})`
       }else
          title = 'Aktivitas belum ada'
    }
