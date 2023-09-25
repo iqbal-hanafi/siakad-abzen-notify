@@ -227,7 +227,7 @@ app.get('/', async (req, res) => {
    var dataLogt = await getObject(s3logt)
    var date = (new Date()).toLocaleString('id-ID', {dateStyle:'full'})
    if(dataLogt.data)
-      msg += `<span>Riwayat presensi otomatis ${date}</span><br/><table style="margin: 10px;">
+      msg += `<span>Riwayat presensi otomatis ${date}</span><br/><br/><table>
       <thead>
       <tr>
          <th>Nama</th>
