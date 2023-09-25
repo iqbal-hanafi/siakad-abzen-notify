@@ -212,13 +212,16 @@ app.get('/', async (req, res) => {
    var dataLogt = await getObject(s3logt)
    var date = (new Date()).toLocaleString('id-ID', {dateStyle:'full'})
    if(dataLogt.data)
-      msg += `Riwayat presensi otomatis pada tanggal ${date}<br/><table>
+      msg += `<span>Riwayat presensi otomatis ${date}</span><br/><table>
+      <thead>
       <tr>
          <th>Nama</th>
          <th>Matkul</th>
          <th>Informasi</th>
          <th>Waktu</th>
       </tr>
+      </thead>
+      <tbody>
       `
       for(dt of dataLogt.data)
          for(dtt of dt.log)
@@ -228,7 +231,7 @@ app.get('/', async (req, res) => {
                <td>${dtt.msg}</td>
                <td>${dt.time}</td>
             </tr>`
-      msg += `</table><br/>`
+      msg += `</tbody></table><br/>`
    var data = await getObject(s3dt)
    if(Object.keys(data).length)
       msg += '<br /><h2>Daftar Pengguna</h2><br/><ul>'
