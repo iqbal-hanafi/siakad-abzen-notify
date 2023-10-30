@@ -176,6 +176,7 @@ async function login(usr, pwd){
                      data['user']=usr
                      data['pwd']=pwd
                      data['captcha']=chpta
+                     console.log(data)
                      logreq.post(form.getAttribute('action'),(e, r, b) => {
                         console.log(b)
                         return resv('continue')
