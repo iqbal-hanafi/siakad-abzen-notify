@@ -133,7 +133,6 @@ async function login(usr, pwd){
                })
                return
             }
-            console.log(body)
             if(body.toLowerCase().includes('invalid password or username'))
                return resv('invalid')
             var root = parse(body)
