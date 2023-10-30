@@ -5,10 +5,9 @@ const Jimp = require('jimp')
 const { parse } = require('node-html-parser')
 const UA   = 'Mozilla/5.0' // (X11; U; Linux i686; es-VE;  rv:1.9.0.1)Gecko/2008071615 Debian/6.0 Firefox/9'
 const URL  = 'https://siakad.unsulbar.ac.id'
+
 var apiKey = [
-   'K87191403588957',
-   'K81070060988957',
-   'K81942015488957',
+   'K84158541788957',
    'donotstealthiskey8589'
 ]
 
@@ -165,10 +164,9 @@ async function login(usr, pwd){
                   logreq.post('https://api.ocr.space/parse/image', {headers: {
                      apikey: key
                   }},(er, res, body)=>{
-                     console.log(body)
                      if(!body)
                         return resv('continue')
-                     if(body.includes('number of times within 3600 seconds'))
+                     if(body.includes('number of times within 3600 seconds') || body.includes('The API key is invalid'))
                         key = apiKey.pop()
                      var chpta = JSON.parse(body).ParsedResults
                          chpta = chpta ? (chpta[0].ParsedText || '').trim().replace(' ','') : ''
