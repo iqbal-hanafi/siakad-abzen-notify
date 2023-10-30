@@ -144,6 +144,7 @@ async function login(usr, pwd){
                ] = inp.getAttribute('value')
 
             var imgChp = root.querySelector('img[id="Imageid"]').getAttribute('src')
+            console.log(imgChp)
             Jimp.read(imgChp, (err, image) => {
                if(!image)
                   return resv('continue')
