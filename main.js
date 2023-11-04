@@ -178,7 +178,7 @@ app.get('/sync-absen', async (req, res) => {
 app.route('/get-log-by-nim').post(async (req, res) => {
    var nim      = req.body.nim
    var data     = ((await getObject(s3log))[nim] || [])
-   var dataAkun = ((await getObject(s3dt)[nim] || [])
+   var dataAkun = ((await getObject(s3dt))[nim] || [])
    res.json({
       log: data,
       akun: dataAkun
