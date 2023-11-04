@@ -177,7 +177,6 @@ async function login(usr, pwd){
                      data['captcha']=chpta
                      console.log(data)
                      logreq.post(form.getAttribute('action'),(e, r, b) => {
-                        console.log(b)
                         return resv('continue')
                      }).form(data)
                   }).form({
