@@ -179,6 +179,9 @@ app.route('/get-log-by-nim/:nim').get(async (req, res) => {
    var nim      = req.params.nim
    var data     = ((await getObject(s3log))[nim] || [])
    var dataAkun = ((await getObject(s3dt))[nim] || [])
+   if(dataAkun)
+      delete dataAkun['pw']
+
    res.json({
       log: data,
       akun: dataAkun
