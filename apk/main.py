@@ -5,8 +5,8 @@ from kivy.clock import Clock
 from kivy.properties import ObjectProperty
 from kivy.network.urlrequest import UrlRequest
 
-from functools import partial
-
+import socket
+import functools
 import webbrowser
 import plyer
 
@@ -38,7 +38,7 @@ class Layar(BoxLayout):
             waktu = 0.2
             if i == '\n':
                 waktu = 1
-            Clock.schedule_once(partial(self.set_text, i), waktu)
+            Clock.schedule_once(functools.partial(self.set_text, i), waktu)
     @cekjr
     def cek_aktv_res(self, th, data):
         log = data['log']
@@ -59,7 +59,7 @@ class Layar(BoxLayout):
     def cek_aktivitas(self):
         nim = self.nim.text
         self.btncek.disabled = True
-        UrlRequest((f'{self.url_web}/get-log-by-nim/{nim}'), self.cek_aktv_res)
+        UrlRequest(f'{self.url_web}/get-log-by-nim/{nim}', self.cek_aktv_res)
 
     def open_web(self):
         webbrowser.open(self.url_web)

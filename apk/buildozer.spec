@@ -13,7 +13,7 @@ package.domain = maoundis.com
 source.dir = .
 
 # (list) Source files to include (let empty to include all the files)
-source.include_exts = py,jpg,txt
+source.include_exts = py,png,txt
 
 # (list) List of inclusions using pattern matching
 #source.include_patterns = assets/*,images/*.png
@@ -33,21 +33,21 @@ source.include_exts = py,jpg,txt
 
 # (str) Application versioning (method 2)
 version.regex = (?<=v)([\d.]+)(?=[^\d])
-version.filename = v.txt
+version.filename = ./v.txt
 
 # (list) Application requirements
 # comma separated e.g. requirements = sqlite3,kivy
-requirements = python3,kivy,plyer
+requirements = python3,kivy,plyer,webbrowser
 
 # (str) Custom source folders for requirements
 # Sets custom source for any requirements with recipes
 # requirements.source.kivy = ../../kivy
 
 # (str) Presplash of the application
-presplash.filename = assets/img/logobs.jpg
+presplash.filename = assets/img/logobs.png
 
 # (str) Icon of the application
-icon.filename = assets/img/logobs.jpg
+icon.filename = assets/img/logobs.png
 
 # (str) Supported orientation (one of landscape, sensorLandscape, portrait or all)
 orientation = portrait
