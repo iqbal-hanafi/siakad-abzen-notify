@@ -4,7 +4,7 @@
 title = BotSiakad
 
 # (str) Package name
-package.name = bot-siakad.maoundis.com
+package.name = botSiakad.maoundis.com
 
 # (str) Package domain (needed for android/ios packaging)
 package.domain = maoundis.com
