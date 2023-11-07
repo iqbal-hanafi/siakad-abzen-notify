@@ -130,13 +130,15 @@ uix = """
 class MainApp(App):
     def on_pause(self):
         return True
+
     def on_start(self):
         plyer.orientation.set_sensor(mode='portrait')
+
     def build(self):
         Builder.load_string(uix)
         return Layar()
 
 
 if __name__ == "__main__":
-    app = MyApp()
+    app = MainApp()
     app.run()
