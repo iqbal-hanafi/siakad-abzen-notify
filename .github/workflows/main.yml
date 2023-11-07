@@ -36,7 +36,7 @@ jobs:
         with:
           workdir: apk
           command: buildozer android debug
-          buildozer_version: master
+          buildozer_version: stable
 
       - name: Create Release
         id: create_release
