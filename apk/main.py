@@ -39,6 +39,7 @@ class Layar(BoxLayout):
             if i == '\n':
                 waktu = 1
             Clock.schedule_once(functools.partial(self.set_text, i), waktu)
+
     @cekjr
     def cek_aktv_res(self, th, data):
         log = data['log']
@@ -59,13 +60,15 @@ class Layar(BoxLayout):
     def cek_aktivitas(self):
         nim = self.nim.text
         self.btncek.disabled = True
+        self.info.text = ''
         UrlRequest(f'{self.url_web}/get-log-by-nim/{nim}', self.cek_aktv_res)
 
+    @cekjr
     def open_web(self):
         webbrowser.open(self.url_web)
 
 
-Builder.load_string("""
+uix = """
 #:set hijau (0,1,0,1)
 
 <LabelHeker@Label>:
@@ -87,6 +90,7 @@ Builder.load_string("""
         source: 'assets/img/logobs.png'
         size_hint_y: 3
     Label:
+        size_hint_y: 0.5
         text: 'Silahkan Masukkan [b]NIM[/b] anda'
         markup: True
     BoxLayout:
@@ -105,7 +109,7 @@ Builder.load_string("""
             on_release:
                 root.cek_aktivitas()
     ScrollView:
-        size_hint_y: 8
+        size_hint_y: 6
         canvas.before:
             Color:
                 rgba: (1,0,1,0.06)
@@ -116,19 +120,20 @@ Builder.load_string("""
             id: info
             padding: 20, 20
             size_hint_y: None
-            font_size: 45
+            font_size: 50
             markup: True
             on_ref_press:
                 root.open_web()
-""")
+"""
 
 
-class MyApp(App):
+class MainApp(App):
     def on_pause(self):
         return True
     def on_start(self):
         plyer.orientation.set_sensor(mode='portrait')
     def build(self):
+        Builder.load_string(uix)
         return Layar()
 
 
