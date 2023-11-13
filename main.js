@@ -68,19 +68,26 @@ app.route('/adduser').post(async (req, res) => {
             var klsb  = await getObject(s3kls)
                 klsb  = ((klsb[nim] && klsb[nim].kelas) || {})
             if(kls.success && kls.data !== []){
-               var checkbox_kls = kls.data.map(x => `<label><input name="kelas[]" value="${escape(JSON.stringify(x))}" type="checkbox" id="${x.id}"${klsb[x.id] ? ' checked': ''}>${x.mk}</label>`).join(os.EOL)
+               var checkbox_kls = kls.data.map(x => `
+               <div class="form-group">
+                 <label class="form-checkbox">
+                   <input type="checkbox" name="kelas[]" value="${escape(JSON.stringify(x))}" id="${x.id}"${klsb[x.id] ? ' checked': ''}>
+                   <i class="form-icon"></i> ${x.mk}
+                 </label>
+               </div>
+               `).join(os.EOL)
                form = `
-               Silahkan pilih kelas yg ingin di presensi otomatis
-               <br />
-               <form style="padding: 30px;text-align: left" method="POST" action="/set-kelas" enctype="multipart/form-data">
-                  ${checkbox_kls}
-                  <input type="hidden" name="nim" value="${nim}"></input>
-                  <input type="hidden" name="name" value="${data.nama}"></input>
-                  <br />
-                  <br />
-                  <button type="submit">Simpan Kelas</button>
-               </form>
-               <br />
+               <div class="card-header">
+                  <div class="card-subtitle text-gray">Silahkan pilih kelas yg ingin di presensi otomatis</div>
+               </div>
+               <div class="card-body">
+                  <form style="padding: 30px;text-align: left" method="POST" action="/set-kelas" enctype="multipart/form-data">
+                     ${checkbox_kls}
+                     <input type="hidden" name="nim" value="${nim}"></input>
+                     <input type="hidden" name="name" value="${data.nama}"></input>
+                     <button class="btn-primary btn btn-block" type="submit">Simpan Kelas</button>
+                  </form>
+               </div>
                `
                dataAkun[nim] = {...data, nim, pw}
                await putObject(s3dt, dataAkun)
@@ -103,19 +110,22 @@ app.route('/adduser').post(async (req, res) => {
    res.render('main', {
       title:'Login Siakad',
       html:`
-         <quote>patama'i akunmu sodara ( silahkan masukkan akun anda )</quote>
-         <br />
-         <br />
-         <br />
-         <form method="POST" enctype="multipart/form-data" autocomplete="off">
-            <input type="text" name="nim" placeholder="username/nim"></input>
-            <br />
-            <br />
-            <input type="password" name="pw" placeholder="password"></input>
-            <br />
-            <br />
-            <button type="submit">Login</button>
-         </form>
+         <div class="card-header">
+            <div class="card-subtitle text-gray">patama'i akunmu sodara ( silahkan masukkan akun anda )</div>
+         </div>
+         <div class="card-body">
+            <form method="POST" enctype="multipart/form-data" autocomplete="off">
+               <div class="form-group">
+                  <label class="form-label" for="user">username</label>
+                  <input class="form-input" type="text" name="nim" placeholder="username/nim" id="user"></input>
+               </div>
+               <div class="form-group">
+                  <label class="form-label" for="pw">password</label>
+                  <input class="form-input" type="password" name="pw" placeholder="password" id="pw"></input>
+               </div>
+               <button class="btn btn-primary btn-lg btn-block" type="submit">Login</button>
+            </form>
+         </div>
       `
    })
 })
@@ -196,23 +206,23 @@ app.route('/show-log').post(async (req, res) => {
    if(nim){
       var data = ((await getObject(s3log))[nim] || [])
       if(data.length !== 0){
-         msg = data.map(x => `<tr>
-                 <td>${x.mk}</td>
-                 <td>${x.msg}</td>
-                 <td>${x.waktu}</td>
-         </tr>`).join(os.EOL)
-         msg = `<br/><table>
-                  <thead>
-                     <tr>
-                        <th>Matkul</th>
-                        <th>Informasi</th>
-                        <th>Waktu</th>
-                     </tr>
-                  </thead>
-                  <tbody>
+         for(x in data)
+            msg += `<div class="timeline-item">
+                    <div class="timeline-left"><a class="timeline-icon tooltip" data-tooltip="${data[x].waktu}">${x===0?'<i class="icon icon-check"></i>':''}</a></div>
+                    <div class="timeline-content">
+                      <div class="tile">
+                        <div class="tile-content">
+                          <p class="tile-subtitle">${data[x].waktu}</p>
+                          <p class="tile-title">${data[x].mk}</p>
+                          <p class="tile-title">${data[x].msg}</p>
+                        </div>
+                      </div>
+                   </div>`
+         msg = `<div class="card-body">
+                  <div class="timeline">
                      ${msg}
-                  </tbody>
-                </table>`
+                  </div>
+                </div>`
          title = `Aktivitas Anda (${nim})`
       }else
          title = 'Aktivitas belum ada'
@@ -225,20 +235,23 @@ app.route('/show-log').post(async (req, res) => {
    res.render('main', {
       title:'Lihat Aktivitas Anda',
       html:`
-      <form method="POST" enctype="multipart/form-data" autocomplete="off">
-         <input type="text" placeholder="nim" name="nim"></input>
-         <br />
-         <br />
-         <button type="submit">lihat aktivitas</button>
-      </form>`})
+      <div class="card-body">
+         <form method="POST" enctype="multipart/form-data" autocomplete="off">
+            <div class="form-group">
+               <label class="form-label" for="nim">NIM</label>
+               <input class="form-input" id="nim" type="text" placeholder="nim" name="nim"></input>
+            </div>
+            <button class="btn btn-primary btn-block" type="submit">lihat aktivitas</button>
+         </form>
+     </div>`})
 })
 
 app.get('/', async (req, res) => {
-   var msg = ''
+   var msg = '<div class="card-body">'
    var dataLogt = await getObject(s3logt)
    var date = (new Date()).toLocaleString('id-ID', {dateStyle:'full'})
    if(dataLogt.data)
-      msg += `<span>Riwayat presensi otomatis ${date}</span><br/><br/><table>
+      msg += `<p>Riwayat presensi otomatis ${date}</p><table class="table table-striped table-hover table-scroll">
       <thead>
       <tr>
          <th>Nama</th>
@@ -257,19 +270,19 @@ app.get('/', async (req, res) => {
                <td>${dtt.msg}</td>
                <td>${dt.time}</td>
             </tr>`
-      msg += `</tbody></table><br/>`
+      msg += `</tbody></table>`
    var data = await getObject(s3dt)
-   if(Object.keys(data).length)
-      msg += '<br /><h2>Daftar Pengguna</h2><br/><ul>'
+   if(Object.keys(data).length){
+      msg += '<h2 class="my-2">Daftar Pengguna</h2><ul>'
       for(dt in data){
          dt = data[dt]
          msg += `<li>${dt.nama} (${dt.nim.slice(0,5)}***)</li>`
       }
       msg += '</ul>'
-
+   }
    res.render('main', {
       title:'Riwayat Hari ini',
-      html:msg
+      html:(msg + '</div>')
    })
 })
 
@@ -278,10 +291,17 @@ app.get('/about', (req, res) => {
    res.render('main', {
       title: 'About',
       html: `<span style="text-align: center">
-         Aplikasi ini adalah alat presensi otomatis dengan menggunakan sistem live check pada web 'siakad.unsulbar.ac.id' dibuat untuk mahasiswa/i yang sering terlewat presensi di siakad karena faktor lupa, hilang jaringan, dll
-         <a style="font-size: 12px;text-decoration:none;color:black;" href="https://instagram.com/ikbal.rdmc__">
-            <i> ~ by <u>@ikbal.rdmc__</u></i>
-         </a>
+        <div class="card-image">
+             <img src="https://scontent.cdninstagram.com/v/t51.2885-15/248444045_620208956055681_81260960514199161_n.webp?stp=dst-jpg_e35&_nc_ht=scontent.cdninstagram.com&_nc_cat=109&_nc_ohc=0KSrCT_R2vcAX9DRWr4&edm=APs17CUBAAAA&ccb=7-5&ig_cache_key=MjY5MzY3NzY4ODYxNDI1MDY2NA%3D%3D.2-ccb7-5&oh=00_AfCOMd9MbtTyP8MGl0HkrF952u2a8qlbZXJJbwVSAnBuMw&oe=65572D3B&_nc_sid=10d13b" class="img-responsive">
+        </div>
+        <div class="card-header">
+          <div class="card-subtitle text-gray">Aplikasi ini adalah alat presensi otomatis dengan menggunakan sistem live check pada web 'siakad.unsulbar.ac.id' dibuat untuk mahasiswa/i yang sering terlewat presensi di siakad karena faktor lupa, hilang jaringan, dll</div>
+        </div>
+        <div class="card-footer">
+          <a href="@ikbal.rdmc__">
+            <i>~ by Muh Iqbal Hanafi</i>
+          </a>
+        </div>
       </span>`
    })
 })
