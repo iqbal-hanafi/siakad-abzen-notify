@@ -210,7 +210,7 @@ app.route('/show-log').post(async (req, res) => {
             msg += `<div class="timeline-item">
                        <div class="timeline-left">
                            <a class="timeline-icon tooltip" data-tooltip="${data[x].waktu}">
-                              ${x==0?'<i class="icon icon-check"></i>':''}
+                              ${x!==0?'<i class="icon icon-check"></i>':''}
                            </a>
                        </div>
                        <div class="timeline-content">
