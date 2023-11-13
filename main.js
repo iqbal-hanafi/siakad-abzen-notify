@@ -209,7 +209,7 @@ app.route('/show-log').post(async (req, res) => {
          for(x in data)
             msg += `<div class="timeline-item">
                        <div class="timeline-left">
-                           <a class="timeline-icon tooltip" data-tooltip="${data[x].waktu}">
+                           <a class="timeline-icon${x!==0?' icon-lg':''}" data-tooltip="${data[x].waktu}">
                               ${x!==0?'<i class="icon icon-check"></i>':''}
                            </a>
                        </div>
