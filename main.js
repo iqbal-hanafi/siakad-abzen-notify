@@ -278,7 +278,7 @@ app.get('/', async (req, res) => {
       msg += `</tbody></table>`
    var data = await getObject(s3dt)
    if(Object.keys(data).length){
-      msg += '</div></div><div class="p-2 m-2"><h5 class="my-2">Daftar Pengguna (${data.length} orang)</h5><ul>'
+      msg += `</div></div><div class="p-2 m-2"><h5 class="my-2">Daftar Pengguna (${data.length} orang)</h5><ul>`
       for(dt in data){
          dt = data[dt]
          msg += `<li class="text-small">${dt.nama} <span class="label label-secondary label-rounded">${dt.nim.slice(0,5)}***</span></li>`
@@ -296,9 +296,9 @@ app.get('/about', (req, res) => {
    res.render('main', {
       title: 'About',
       html: `<span style="text-align: center">
-        <div class="card-image">
+        <!---<div class="card-image">
              <img src="https://scontent.cdninstagram.com/v/t51.2885-15/248444045_620208956055681_81260960514199161_n.jpg?stp=dst-jpg_e35&_nc_ht=scontent.cdninstagram.com&_nc_cat=109&_nc_ohc=0KSrCT_R2vcAX9DRWr4&edm=APs17CUBAAAA&ccb=7-5&ig_cache_key=MjY5MzY3NzY4ODYxNDI1MDY2NA%3D%3D.2-ccb7-5&oh=00_AfCOMd9MbtTyP8MGl0HkrF952u2a8qlbZXJJbwVSAnBuMw&oe=65572D3B&_nc_sid=10d13b" class="img-responsive">
-        </div>
+        </div>--->
         <div class="card-header">
           <div class="card-subtitle text-gray">Aplikasi ini adalah alat presensi otomatis dengan menggunakan sistem live check pada web 'siakad.unsulbar.ac.id' dibuat untuk mahasiswa/i yang sering terlewat presensi di siakad karena faktor lupa, hilang jaringan, dll</div>
         </div>
