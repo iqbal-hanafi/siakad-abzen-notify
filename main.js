@@ -280,8 +280,8 @@ app.get('/', async (req, res) => {
    var jumlah_orang = Object.keys(data).length
    if(jumlah_orang){
       msg += `</div></div><div class="p-2 my-2"><div class="accordion">
-               <input id="accordion" type="radio" name="accordion-radio" hidden="">
-               <label class="accordion-header c-hand" for="accordion"><i class="icon icon-arrow-right mr-1"></i>Daftar Pengguna ( ${jumlah_orang} orang )</label>
+               <input id="accordion-user" type="checkbox" name="accordion-checkbox" hidden="" checked>
+               <label class="accordion-header c-hand" for="accordion-user"><i class="icon icon-arrow-right mr-1"></i>Daftar Pengguna ( ${jumlah_orang} orang )</label>
                <div class="accordion-body">
                   <ul class="menu menu-nav">`
       for(dt in data){
