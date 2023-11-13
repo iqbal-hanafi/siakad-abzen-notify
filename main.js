@@ -260,7 +260,7 @@ app.get('/', async (req, res) => {
       <thead>
       <tr>
          <th>Nama</th>
-         <th>Matkul</th>
+         <th>Mata Kuliah</th>
          <th>Informasi</th>
          <th>Waktu</th>
       </tr>
@@ -278,10 +278,10 @@ app.get('/', async (req, res) => {
       msg += `</tbody></table>`
    var data = await getObject(s3dt)
    if(Object.keys(data).length){
-      msg += '</div></div><div class="p-2 m-2"><h5 class="my-2">Daftar Pengguna</h5><ul>'
+      msg += '</div></div><div class="p-2 m-2"><h5 class="my-2">Daftar Pengguna (${data.length} orang)</h5><ul>'
       for(dt in data){
          dt = data[dt]
-         msg += `<li>${dt.nama} <span class="label label-secondary label-rounded">${dt.nim.slice(0,5)}***</span></li>`
+         msg += `<li class="text-small">${dt.nama} <span class="label label-secondary label-rounded">${dt.nim.slice(0,5)}***</span></li>`
       }
       msg += '</ul>'
    }
