@@ -39,7 +39,7 @@ app.post('/set-kelas', async (req, res) => {
           kls[nim]={kelas: kolas}
       await putObject(s3kls,kls)
       title = 'Selesai disimpan'
-      msg   = `<img src="/img/checklist.png" style="display: block;margin-left: auto;margin-right: auto;width: 150px;"></img><br />Halo <b>${name}</b> ( ${nim} ) kelas sudah di simpan, anda bisa perbarui dengan login ulang<br /><br />${rkls}`
+      msg   = `<div class="card-body"><img src="/img/checklist.png" style="display: block;margin-left: auto;margin-right: auto;width: 150px;"></img><br />Halo <span class="label label-secondary">${name}</span> ( ${nim} ) kelas sudah di simpan, anda bisa perbarui dengan login ulang<br /><br />${rkls}</div>`
 
    }
    res.render('main', {
@@ -208,16 +208,21 @@ app.route('/show-log').post(async (req, res) => {
       if(data.length !== 0){
          for(x in data)
             msg += `<div class="timeline-item">
-                    <div class="timeline-left"><a class="timeline-icon tooltip" data-tooltip="${data[x].waktu}">${x===0?'<i class="icon icon-check"></i>':''}</a></div>
-                    <div class="timeline-content">
-                      <div class="tile">
-                        <div class="tile-content">
-                          <p class="tile-subtitle">${data[x].waktu}</p>
-                          <p class="tile-title">${data[x].mk}</p>
-                          <p class="tile-title">${data[x].msg}</p>
-                        </div>
-                      </div>
-                   </div>`
+                       <div class="timeline-left">
+                           <a class="timeline-icon tooltip" data-tooltip="${data[x].waktu}">
+                              ${x==0?'<i class="icon icon-check"></i>':''}
+                           </a>
+                       </div>
+                       <div class="timeline-content">
+                         <div class="tile">
+                           <div class="tile-content">
+                             <p class="tile-subtitle">${data[x].waktu}</p>
+                             <p class="tile-title">${data[x].mk}</p>
+                             <p class="tile-title">${data[x].msg}</p>
+                           </div>
+                         </div>
+                       </div>
+                    </div>`
          msg = `<div class="card-body">
                   <div class="timeline">
                      ${msg}
@@ -247,11 +252,11 @@ app.route('/show-log').post(async (req, res) => {
 })
 
 app.get('/', async (req, res) => {
-   var msg = '<div class="card-body">'
+   var msg = '<div class="card-body"><div class="columns col-online">'
    var dataLogt = await getObject(s3logt)
    var date = (new Date()).toLocaleString('id-ID', {dateStyle:'full'})
    if(dataLogt.data)
-      msg += `<p>Riwayat presensi otomatis ${date}</p><table class="table table-striped table-hover table-scroll">
+      msg += `<div class="column col-md-12 col-xl-6"><p class="text-gray">Riwayat presensi otomatis ${date}</p><table class="table table-striped table-scroll">
       <thead>
       <tr>
          <th>Nama</th>
@@ -265,24 +270,24 @@ app.get('/', async (req, res) => {
       for(dt of dataLogt.data)
          for(dtt of dt.log)
             msg += `<tr>
-               <td>${dt.nama}</td>
+               <td><span class="label label-rounded label-primary">${dt.nama}</span></td>
                <td>${dtt.mk}</td>
                <td>${dtt.msg}</td>
                <td>${dt.time}</td>
             </tr>`
-      msg += `</tbody></table>`
+      msg += `</tbody></table></div>`
    var data = await getObject(s3dt)
    if(Object.keys(data).length){
-      msg += '<h2 class="my-2">Daftar Pengguna</h2><ul>'
+      msg += '<div class="column col-md-12 col-xl-6 p-2"><h5 class="my-2">Daftar Pengguna</h5><ul>'
       for(dt in data){
          dt = data[dt]
-         msg += `<li>${dt.nama} (${dt.nim.slice(0,5)}***)</li>`
+         msg += `<li>${dt.nama} [ ${dt.nim.slice(0,5)}*** ]</li>`
       }
-      msg += '</ul>'
+      msg += '</ul></div>'
    }
    res.render('main', {
       title:'Riwayat Hari ini',
-      html:(msg + '</div>')
+      html:(msg + '</div></div>')
    })
 })
 
