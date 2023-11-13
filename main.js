@@ -279,12 +279,16 @@ app.get('/', async (req, res) => {
    var data = await getObject(s3dt)
    var jumlah_orang = Object.keys(data).length
    if(jumlah_orang){
-      msg += `</div></div><div class="p-2 my-2"><h5 class="my-2">Daftar Pengguna ( ${jumlah_orang} orang )</h5><ul>`
+      msg += `</div></div><div class="p-2 my-2"><div class="accordion">
+               <input id="accordion" type="radio" name="accordion-radio" hidden="">
+               <label class="accordion-header c-hand" for="accordion"><i class="icon icon-arrow-right mr-1"></i>Daftar Pengguna ( ${jumlah_orang} orang )</label>
+               <div class="accordion-body">
+                  <ul class="menu menu-nav">`
       for(dt in data){
          dt = data[dt]
-         msg += `<li class="text-small">${dt.nama} <span class="label label-secondary label-rounded">${dt.nim.slice(0,5)}***</span></li>`
+         msg += `<li class="menu-item text-small">${dt.nama} <span class="label label-secondary label-rounded">${dt.nim.slice(0,5)}***</span></li>`
       }
-      msg += '</ul>'
+      msg += '</ul></div></div>'
    }
    res.render('main', {
       title:'Riwayat Hari ini',
