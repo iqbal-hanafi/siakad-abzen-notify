@@ -58,9 +58,9 @@ app.route('/adduser').post(async (req, res) => {
    else {
       var dataAkun = await getObject(s3dt)
       var data     = {}
-      if(dataAkun[nim] && dataAkun[nim].pw === pw)
-         data = dataAkun[nim]
-      else
+//      if(dataAkun[nim] && dataAkun[nim].pw === pw)
+//         data = dataAkun[nim]
+//      else
          data = await login(nim, pw)
       if(data.nama && data.kuki){
          while(true){
@@ -95,9 +95,8 @@ app.route('/adduser').post(async (req, res) => {
                msgResult = `Hallo ${data.nama}`
 
                break
-            } else if(kls.msg === 'expired') {
+            } else if(kls.msg === 'expired')
                data = await login(nim, pw)
-            }
          }
       } else if(data == 'invalid')
          msgResult = `gagal menambahkan '${nim}' & '${pw}' karena akun tidak ditemukan`

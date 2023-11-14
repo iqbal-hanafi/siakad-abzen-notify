@@ -124,8 +124,8 @@ async function login(usr, pwd){
      var resl = await new Promise((resv) => {
          logreq.get(`${URL}/login`, (err, res, body) => {
             if(body.includes('/logout')){
-               logreq.get(`${URL}/mahasiswa/data`, (e, r, b) => {
-                  console.log(e,r,b)
+               logreq.get(`${URL}/mahasiswa/data#akademik`, (e, r, b) => {
+                  console.log(b)
                   jar._jar.store.getAllCookies(function(err, cookieArray) {
                      return resv({
                         nama: body.match(/(?<=class\="d-sm-none\sd-lg-inline-block"\>)([.\w\s]+)(?=\s)/)[0],
