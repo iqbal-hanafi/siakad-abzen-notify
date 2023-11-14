@@ -219,7 +219,7 @@ app.route('/show-log').post(async (req, res) => {
             if(!datas[day])
                datas[day]=''
             datas[day] += `
-               <p class="tile-title">${jam}: ${dt.mk}, ${dt.msg}</p>
+               <p class="tile-title"><span class="label label-secondary">${jam}</span> ${dt.mk} - ${dt.msg}</p>
             `
          }
          var i = 0
