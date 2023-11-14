@@ -58,9 +58,9 @@ app.route('/adduser').post(async (req, res) => {
    else {
       var dataAkun = await getObject(s3dt)
       var data     = {}
-//      if(dataAkun[nim] && dataAkun[nim].pw === pw)
-//         data = dataAkun[nim]
-//      else
+      if(dataAkun[nim] && dataAkun[nim].pw === pw)
+         data = dataAkun[nim]
+      else
          data = await login(nim, pw)
       if(data.nama && data.kuki){
          while(true){
@@ -251,11 +251,12 @@ app.route('/show-log').post(async (req, res) => {
 })
 
 app.get('/', async (req, res) => {
-   var msg = '<div class="card-body">'
+
+   var msg = ''
    var dataLogt = await getObject(s3logt)
    var date = (new Date()).toLocaleString('id-ID', {dateStyle:'full'})
    if(dataLogt.data)
-      msg += `<p>presensi otomatis ${date}</p><table class="table table-striped table-scroll">
+      msg += `<div class="card-body"><p>presensi otomatis ${date}</p><table class="table table-striped table-scroll">
       <thead>
       <tr>
          <th>Nama</th>
@@ -274,21 +275,35 @@ app.get('/', async (req, res) => {
                <td>${dtt.msg}</td>
                <td>${dt.time}</td>
             </tr>`
-      msg += `</tbody></table>`
+      msg += `</tbody></table></div>`
+
    var data = await getObject(s3dt)
    var jumlah_orang = Object.keys(data).length
-   if(jumlah_orang){
-      msg += `</div></div><div class="p-2 my-2"><div class="accordion">
-               <input id="accordion-user" type="checkbox" name="accordion-checkbox" hidden="" checked>
-               <label class="accordion-header c-hand" for="accordion-user"><i class="icon icon-arrow-right mr-1"></i>Daftar Pengguna ( ${jumlah_orang} orang )</label>
-               <div class="accordion-body">
-                  <ul class="menu menu-nav">`
-      for(dt in data){
-         dt = data[dt]
-         msg += `<li class="menu-item text-small">${dt.nama} <span class="label label-secondary label-rounded">${dt.nim.slice(0,5)}***</span></li>`
-      }
-      msg += '</ul></div></div>'
+   var prodis = {}
+   for(dt of data){
+      if(dt.prodi && !prodis[dt.prodi])
+         prodis[dt.prodi]=[]
+      prodis[dt.prodi].push(dt)
    }
+   if(prodis){
+      msg += `</div><div class="p-2 m-2"><h5>Daftar Pengguna ${ jumlah_orang }</h5>`
+      for(prodi in prodis){
+         msg += `
+                  <div class="accordion">
+                     <input id="accordion-${prodi}" type="checkbox" name="accordion-checkbox" hidden="" checked>
+                     <label class="accordion-header c-hand" for="accordion-${prodi}"><i class="icon icon-arrow-right mr-1"></i>${prodi} ( ${prodis[prodi].length })</label>
+                     <div class="accordion-body">
+                        <ul class="menu menu-nav">`
+               for(dt of prodis[prodi])
+                  msg += `
+                     <li class="menu-item text-small">${dt.nama} <span class="label label-secondary label-rounded">${dt.nim.slice(0,5)}***</span></li>
+                  `
+         msg += '</ul>
+            </div>
+         </div>'
+      }
+   }
+
    res.render('main', {
       title:'Riwayat Hari ini',
       html: msg

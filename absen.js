@@ -125,11 +125,14 @@ async function login(usr, pwd){
          logreq.get(`${URL}/login`, (err, res, body) => {
             if(body.includes('/logout')){
                logreq.get(`${URL}/mahasiswa/data#akademik`, (e, r, b) => {
-                  console.log(b)
+                  var prodi = b.match(/(?<=Program\sStudi\<\/td\>[\s\n]+\<td\swidth\="20px;"\>:\<\/td\>[\s\n]+\<td\>)([^<]+)/mis)
+                  if(prodi)
+                     prodi = prodi[0].trim()
                   jar._jar.store.getAllCookies(function(err, cookieArray) {
                      return resv({
                         nama: body.match(/(?<=class\="d-sm-none\sd-lg-inline-block"\>)([.\w\s]+)(?=\s)/)[0],
-                        kuki: cookieArray.toString()
+                        kuki: cookieArray.toString(),
+                        prodi: prodi || 'Lainnya'
                      })
                   })
                })
