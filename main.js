@@ -222,11 +222,12 @@ app.route('/show-log').post(async (req, res) => {
                <p class="tile-title">${jam}: ${dt.mk}, ${dt.msg}</p>
             `
          }
+         var i == 0
          for(dt in datas){
             msg += `<div class="timeline-item">
                        <div class="timeline-left">
-                           <a class="timeline-icon${x!=0?' icon-lg':''}" data-tooltip="${data[x].waktu}">
-                              ${x!=0?'<i class="icon icon-check"></i>':''}
+                           <a class="timeline-icon${i!=0 ? ' icon-lg' : ''}" data-tooltip="${dt}">
+                              ${i != 0 ? '<i class="icon icon-check"></i>' : ''}
                            </a>
                        </div>
                        <div class="timeline-content">
@@ -238,6 +239,7 @@ app.route('/show-log').post(async (req, res) => {
                          </div>
                        </div>
                     </div>`
+            i++
          }
          msg = `<div class="card-body">
                   <div class="timeline">
