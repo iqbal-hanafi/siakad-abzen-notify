@@ -280,7 +280,8 @@ app.get('/', async (req, res) => {
    var data = await getObject(s3dt)
    var jumlah_orang = Object.keys(data).length
    var prodis = {}
-   for(dt of data){
+   for(dt in data){
+      dt = data[dt]
       if(dt.prodi && !prodis[dt.prodi])
          prodis[dt.prodi]=[]
       prodis[dt.prodi].push(dt)
