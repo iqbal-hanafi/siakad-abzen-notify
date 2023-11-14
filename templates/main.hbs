@@ -6,19 +6,20 @@
       <link rel="stylesheet" href="https://unpkg.com/spectre.css/dist/spectre-exp.min.css">
       <link rel="stylesheet" href="https://unpkg.com/spectre.css/dist/spectre-icons.min.css">
    </head>
-   <body>
-      <!--<audio src="/audio.mp3" preload="auto" autoplay="autoplay" loop></audio>-->
+   <body class="bg-gray">
       <marquee class="text-error" bgcolor="black" direction="right">#SALAM TEKNIK ☠️</marquee>
-      <div class="container pt-2 bg-gray">
-           <header class="navbar m-2 p-2" style="background:white">
-              <section class="navbar-section">
-                <a href="/" class="btn btn-link mx-2">Home</a>
-                <a href="/adduser" class="btn btn-link">Login</a>
-                <a href="/show-log" class="btn btn-link mx-2">Aktivitas</a>
-                <a href="/about" class="btn btn-link">About</a>
-              </section>
-            </header> 
-         <div class="columns p-2">
+      <div class="navbar p-2" style="background-color:white">
+        <div class="navbar-section">
+          <a href="/" class="btn btn-link mx-2">Riwayat</a>
+          <a href="/about" class="btn btn-link">About</a>
+        </div>
+        <div class="navbar-section">
+          <a href="/adduser" class="btn btn-link">Login Bot</a>
+          <a href="/show-log" class="btn btn-link mx-2">Aktivitas</a>
+        </div>
+      </div> 
+      <div class="container">
+         <div class="columns">
             <main class="column col-xl-8 col-md-11 col-mx-auto">
                <div class="p-2 m-2">
                    <h5 class="m-2 text-center">{{ title }}</h5>
@@ -29,9 +30,10 @@
             </main>
          </div>
          <script>
-            document
+            var actv = document
                .querySelector(`.navbar-section>a[href='${window.location.pathname}']`)
-               .classList.add('bg-secondary')
+            actv.classList.remove('btn-link')
+            actv.classList.add('btn-primary')
          </script>
       </div>
    </body>
