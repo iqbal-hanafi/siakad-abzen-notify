@@ -278,7 +278,6 @@ app.get('/', async (req, res) => {
       msg += `</tbody></table></div>`
 
    var data = await getObject(s3dt)
-   var jumlah_orang = Object.keys(data).length
    var prodis = {'Lainnya':[]}
    for(dt in data){
       dt = data[dt]
@@ -287,12 +286,12 @@ app.get('/', async (req, res) => {
       prodis[dt.prodi || 'Lainnya'].push(dt)
    }
    if(prodis){
-      msg += `</div><div class="p-2 m-2"><h5 class="text-center">Daftar Pengguna ${ jumlah_orang }</h5>`
+      msg += `</div><div class="p-2 m-2"><h5 class="text-center">Daftar Pengguna</h5>`
       for(prodi in prodis){
          msg += `
                   <div class="accordion">
                      <input id="accordion-${prodi}" type="checkbox" name="accordion-checkbox" hidden="" checked>
-                     <label class="accordion-header c-hand" for="accordion-${prodi}"><i class="icon icon-arrow-right mr-1"></i>${prodi} ( ${prodis[prodi].length })</label>
+                     <label class="accordion-header c-hand" for="accordion-${prodi}"><i class="icon icon-arrow-right mr-1"></i><span class="badge" data-badge="${prodis[prodi].length}">${prodi}</span></label>
                      <div class="accordion-body">
                         <ul class="menu menu-nav">`
                for(dt of prodis[prodi])
