@@ -205,7 +205,23 @@ app.route('/show-log').post(async (req, res) => {
    if(nim){
       var data = ((await getObject(s3log))[nim] || [])
       if(data.length !== 0){
-         for(x in data)
+         var datas = {}
+         for(dt in data){
+            dt = data[dt]
+            var day = ''
+            var jam = ''
+            if(dt.waktu){
+               var waktu = dt.waktu.split(', ')
+               day = waktu[0]
+               jam = waktu[1]
+            }
+            if(!datas[day])
+               datas[day]=''
+            datas[day] += `
+               <p class="tile-title">${jam}: ${dt.mk}, ${dt.msg}</p>
+            `
+         }
+         for(dt in datas){
             msg += `<div class="timeline-item">
                        <div class="timeline-left">
                            <a class="timeline-icon${x!=0?' icon-lg':''}" data-tooltip="${data[x].waktu}">
@@ -215,13 +231,13 @@ app.route('/show-log').post(async (req, res) => {
                        <div class="timeline-content">
                          <div class="tile">
                            <div class="tile-content">
-                             <p class="tile-subtitle">${data[x].waktu}</p>
-                             <p class="tile-title">${data[x].mk}</p>
-                             <p class="tile-title">${data[x].msg}</p>
+                             <p class="tile-subtitle">${dt}</p>
+                             ${datas[dt]}
                            </div>
                          </div>
                        </div>
                     </div>`
+         }
          msg = `<div class="card-body">
                   <div class="timeline">
                      ${msg}
