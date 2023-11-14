@@ -222,7 +222,7 @@ app.route('/show-log').post(async (req, res) => {
                <p class="tile-title">${jam}: ${dt.mk}, ${dt.msg}</p>
             `
          }
-         var i == 0
+         var i = 0
          for(dt in datas){
             msg += `<div class="timeline-item">
                        <div class="timeline-left">
