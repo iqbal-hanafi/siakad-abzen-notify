@@ -124,7 +124,7 @@ async function login(usr, pwd){
      var resl = await new Promise((resv) => {
          logreq.get(`${URL}/login`, (err, res, body) => {
             if(body.includes('/logout')){
-               logreq.get(`${URL}/mahasiswa/data#akademik`, (e, r, b) => {
+               logreq.get(`${URL}/mahasiswa/data`, (e, r, b) => {
                   console.log(e,r,b)
                   jar._jar.store.getAllCookies(function(err, cookieArray) {
                      return resv({
@@ -178,7 +178,6 @@ async function login(usr, pwd){
                      data['user']=usr
                      data['pwd']=pwd
                      data['captcha']=chpta
-                     console.log(data)
                      logreq.post(form.getAttribute('action'),(e, r, b) => {
                         return resv('continue')
                      }).form(data)
