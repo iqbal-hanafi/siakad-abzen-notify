@@ -282,9 +282,9 @@ app.get('/', async (req, res) => {
    var prodis = {}
    for(dt in data){
       dt = data[dt]
-      if(dt.prodi && !prodis[dt.prodi])
-         prodis[dt.prodi]=[]
-      prodis[dt.prodi].push(dt)
+      if(!prodis[dt.prodi])
+          prodis[dt.prodi || 'Lainnya']=[]
+      prodis[dt.prodi || 'Lainnya'].push(dt)
    }
    if(prodis){
       msg += `</div><div class="p-2 m-2"><h5>Daftar Pengguna ${ jumlah_orang }</h5>`
