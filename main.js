@@ -298,9 +298,9 @@ app.get('/', async (req, res) => {
                   msg += `
                      <li class="menu-item text-small">${dt.nama} <span class="label label-secondary label-rounded">${dt.nim.slice(0,5)}***</span></li>
                   `
-         msg += '</ul>
+         msg += `</ul>
             </div>
-         </div>'
+         </div>`
       }
    }
 
