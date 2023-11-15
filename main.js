@@ -137,7 +137,7 @@ app.get('/sync-absen', async (req, res) => {
       var dataSync = await getObject(s3dt)
 
    var log = null
-   var count = 2
+   var count = 3
    var loge = {}
    for(akun in dataSync){
       var akun = dataSync[akun]
