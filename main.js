@@ -306,46 +306,49 @@ app.get('/', async (req, res) => {
           prodis[dt.prodi]=[]
       prodis[dt.prodi || 'Lainnya'].push(dt)
    }
-   if(Object.keys(nextAbsen).length != 0){
+   msg += '</div>'
+
       // check live
-      msg += `</div><div style="padding-top:20;padding-bottom:20;margin-top: 40;margin-bottom:40;background-color: white" class="px-2"><h5 class="text-center m-2 text-primary">Pending Absen</h5><div class="timeline">`
-      var akon = []
-      for(akn in nextAbsen){
-         akn = nextAbsen[akn]
-         akon.push(akn.nama)
-         if(akon.length > 5)
-            break
-      }
-
-      var j1 = akon.slice(0,3)
-      var j2 = akon.slice(3,6)
-
-      var i = (5-((new Date()).getMinutes() % 5))
-
-      for(akn of [j1, j2]){
-         if(akn == [])
-            break
-         msg += `
-         <div class="timeline-item" id="timeline-${akn}">
-          <div class="timeline-left">
-            <a class="timeline-icon icon-lg" href="#timeline-${akn}">
-              <i class="icon icon-time"></i>
-            </a>
-          </div>
-          <div class="timeline-content">
-            <div class="tile">
-               <div class="tile-content">
-                 <p class="tile-subtitle">${i} menit kedepan</p>
-                 ${akn.map(x => '<p class="tile-title">'+x+'</p>').join('\n')}
-               </div>
-             </div>
-          </div>
-        </div>
-         `
-         i += 5
-      }
-      msg += '</p></div></div>'
+   var xmsg = `<div style="padding-top:20;padding-bottom:20;margin-top: 40;margin-bottom:40;background-color: white" class="px-2"><h5 class="text-center m-2 text-primary">Pending Absen</h5><div class="timeline">`
+   var akon = []
+   for(akn in nextAbsen){
+      akn = nextAbsen[akn]
+      akon.push(akn.nama)
+      if(akon.length > 5)
+         break
    }
+
+   var j1 = akon.slice(0,3)
+   var j2 = akon.slice(3,6)
+
+   var i = (5-((new Date()).getMinutes() % 5))
+
+   for(akn of [j1, j2]){
+      if(akn == [])
+         break
+      xmsg += `
+      <div class="timeline-item" id="timeline-${akn}">
+       <div class="timeline-left">
+         <a class="timeline-icon icon-lg" href="#timeline-${akn}">
+           <i class="icon icon-time"></i>
+         </a>
+       </div>
+       <div class="timeline-content">
+         <div class="tile">
+            <div class="tile-content">
+              <p class="tile-subtitle">${i} menit kedepan</p>
+              ${akn.map(x => '<p class="tile-title">'+x+'</p>').join('\n')}
+            </div>
+          </div>
+       </div>
+     </div>
+      `
+      i += 5
+   }
+   xmsg += '</p></div></div>'
+   if(Object.keys(nextAbsen).length > 2)
+      msg += xmsg
+
    if(prodis){
       msg += `<div class="p-2 m-2"><h5 class="text-center">Daftar Pengguna</h5>`
       for(prodi in prodis){
