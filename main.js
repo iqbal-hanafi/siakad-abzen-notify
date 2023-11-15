@@ -308,15 +308,39 @@ app.get('/', async (req, res) => {
    }
    if(Object.keys(nextAbsen).length != 0){
       // check live
-      var ix = 0
-          msg += `</div><div class="m-2 hero bg-secondary"><div class="hero-body"><h5>Next Absen</h5><p class="text-small">pending <span class="label label-warning">5 menit</span>`
+      msg += `</div><div class="my-2"><h5 class="text-center my-2">Pending Absen</h5><div class="timeline">`
+      var akon = []
       for(akn in nextAbsen){
          akn = nextAbsen[akn]
-         msg += akn.nama
-         if(ix == 3)
+         akon.push(akn.nama)
+         if(akon.length > 5)
             break
-         msg += ', '
-         ix += 1
+      }
+
+      var j1 = akon.slice(0,3)
+      var j2 = akon.slice(3,6)
+
+      var i = 5
+
+      for(akn of [j1, j2]){
+         msg += `
+         <div class="timeline-item" id="timeline-${akn}">
+          <div class="timeline-left">
+            <a class="timeline-icon icon-lg" href="#timeline-{akn}">
+              <i class="icon icon-check"></i>
+            </a>
+          </div>
+          <div class="timeline-content">
+            <div class="tile">
+               <div class="tile-content">
+                 <p class="tile-subtitle">${i} menit</p>
+                 ${akn.map(x => '<p class="tile-title">'+x+'</p>').join('\n')}
+               </div>
+             </div>
+          </div>
+        </div>
+         `
+         i += i
       }
       msg += '</p></div></div>'
    }
