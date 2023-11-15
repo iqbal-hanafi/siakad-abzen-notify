@@ -126,9 +126,11 @@ async function login(usr, pwd){
             if(body.includes('/logout')){
                logreq.get(`${URL}/mahasiswa/data#akademik`, (e, r, b) => {
                   var prodi = b.match(/(?<=Program\sStudi\<\/td\>[\s\n]+\<td\swidth\="20px;"\>:\<\/td\>[\s\n]+\<td\>)([^<]+)/mis)
+                  console.log(prodi)
                   if(prodi)
                      prodi = prodi[0].trim()
                   jar._jar.store.getAllCookies(function(err, cookieArray) {
+                     console.log(prodi)
                      return resv({
                         nama: body.match(/(?<=class\="d-sm-none\sd-lg-inline-block"\>)([.\w\s]+)(?=\s)/)[0],
                         kuki: cookieArray.toString(),
