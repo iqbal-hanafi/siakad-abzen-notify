@@ -308,7 +308,7 @@ app.get('/', async (req, res) => {
    }
    if(Object.keys(nextAbsen).length != 0){
       // check live
-      msg += `</div><div style="margin-top: 20;margin-bottom:20;background-color: white" class="px-2"><h5 class="text-center m-2 text-primary">Pending Absen</h5><div class="timeline">`
+      msg += `</div><div style="margin-top: 40;margin-bottom:40;background-color: white" class="px-2"><h5 class="text-center m-2 text-primary">Pending Absen</h5><div class="timeline">`
       var akon = []
       for(akn in nextAbsen){
          akn = nextAbsen[akn]
