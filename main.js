@@ -323,6 +323,8 @@ app.get('/', async (req, res) => {
       var i = (5-((new Date()).getMinutes() % 5))
 
       for(akn of [j1, j2]){
+         if(akn == [])
+            break
          msg += `
          <div class="timeline-item" id="timeline-${akn}">
           <div class="timeline-left">
