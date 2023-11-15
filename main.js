@@ -59,9 +59,9 @@ app.route('/adduser').post(async (req, res) => {
    else {
       var dataAkun = await getObject(s3dt)
       var data     = {}
-      if(dataAkun[nim] && dataAkun[nim].pw === pw)
-         data = dataAkun[nim]
-      else
+//      if(dataAkun[nim] && dataAkun[nim].pw === pw)
+//         data = dataAkun[nim]
+//      else
          data = await login(nim, pw)
       if(data.nama && data.kuki){
          while(true){
