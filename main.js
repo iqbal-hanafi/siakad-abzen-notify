@@ -309,7 +309,7 @@ app.get('/', async (req, res) => {
    msg += '</div>'
 
       // check live
-   var xmsg = `<div style="padding-top:20;padding-bottom:20;margin-top: 40;margin-bottom:40;background-color: white" class="px-2"><h5 class="text-center m-2 text-primary">Absen Checker</h5><div class="timeline">`
+   var xmsg = `<div style="padding-top:20;padding-bottom:20;margin-top: 40;margin-bottom:40;background-color: white" class="px-2"><h5 class="text-center m-2 text-primary">Absen Checker</h5><p>Setiap 5 menit akan dilakukan pengecekan kelas tiap user di bawah untuk absesnsi otomatis dan repeat</p><div class="timeline">`
    var akon = []
    for(akn in nextAbsen){
       akn = nextAbsen[akn]
