@@ -309,8 +309,9 @@ app.get('/', async (req, res) => {
    if(Object.keys(nextAbsen).length != 0){
       // check live
       var ix = 0
-          msg += `</div><div class="hero bg-dark"><div class="hero-body"><h5>Next Absen</h5><p class="p-2 m-2">pending <span class="label label-warning label-rounded">5 menit<span>`
-      for(akn of nextAbsen){
+          msg += `</div><div class="p-2 hero bg-dark"><div class="hero-body"><h5>Next Absen</h5><p class="p-2 m-2">pending <span class="label label-warning label-rounded">5 menit<span>`
+      for(akn in nextAbsen){
+         akn = nextAbsen[akn]
          msg += akn.nama
          if(ix == 3)
             break
