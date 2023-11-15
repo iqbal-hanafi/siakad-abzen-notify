@@ -137,7 +137,7 @@ app.get('/sync-absen', async (req, res) => {
       var dataSync = await getObject(s3dt)
 
    var log = null
-   var count = 3
+   var count = 2
    var loge = {}
    for(akun in dataSync){
       var akun = dataSync[akun]
@@ -314,12 +314,12 @@ app.get('/', async (req, res) => {
    for(akn in nextAbsen){
       akn = nextAbsen[akn]
       akon.push(akn.nama)
-      if(akon.length > 5)
+      if(akon.length > 3)
          break
    }
 
-   var j1 = akon.slice(0,3)
-   var j2 = akon.slice(3,6)
+   var j1 = akon.slice(0,2)
+   var j2 = akon.slice(2,4)
 
    var i = (5-((new Date()).getMinutes() % 5))
 
