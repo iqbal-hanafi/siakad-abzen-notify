@@ -138,7 +138,7 @@ app.get('/sync-absen', async (req, res) => {
 
    var log = null
    var count = 2
-
+   var loge = {}
    for(akun in dataSync){
       var akun = dataSync[akun]
       var kls  = await getObject(s3kls)
@@ -179,10 +179,11 @@ app.get('/sync-absen', async (req, res) => {
 
       if(count === 0) break
       else count = count - 1
+      loge[akun.nama] = log
    }
 
    await putObject(s3sync, dataSync)
-   res.json(log)
+   res.json(loge)
 })
 
 app.route('/get-log-by-nim/:nim').get(async (req, res) => {
@@ -273,6 +274,7 @@ app.get('/', async (req, res) => {
 
    var msg = ''
    var dataLogt = await getObject(s3logt)
+   var nextAbsen = await getObject(s3sync)
    var date = (new Date()).toLocaleString('id-ID', {dateStyle:'full'})
    if(dataLogt.data)
       msg += `<div class="card-body"><p>presensi otomatis ${date}</p><table class="table table-striped table-scroll">
@@ -304,8 +306,21 @@ app.get('/', async (req, res) => {
           prodis[dt.prodi]=[]
       prodis[dt.prodi || 'Lainnya'].push(dt)
    }
+   if(Object.keys(nextAbsen).length != 0){
+      // check live
+      var ix = 0
+          msg += `</div><div class="hero bg-dark"><div class="hero-body"><h5>Next Absen</h5><p class="p-2 m-2">pending <span class="label label-warning label-rounded">5 menit<span>`
+      for(akn of nextAbsen){
+         msg += akn.nama
+         if(ix == 3)
+            break
+         msg += ', '
+         ix += 1
+      }
+      msg += '</p></div></div>'
+   }
    if(prodis){
-      msg += `</div><div class="p-2 m-2"><h5 class="text-center">Daftar Pengguna</h5>`
+      msg += `<div class="p-2 m-2"><h5 class="text-center">Daftar Pengguna</h5>`
       for(prodi in prodis){
          msg += `
                   <div class="accordion">
