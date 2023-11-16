@@ -353,7 +353,7 @@ app.get('/', async (req, res) => {
    if(prodis){
       msg += `<div class="p-2 m-2"><h5 class="text-center">Daftar Pengguna</h5>`
       for(prodi in prodis){
-         if (!prodi.length) continue
+         if (!prodis[prodi].length) continue
          msg += `
                   <div class="accordion">
                      <input id="accordion-${prodi}" type="checkbox" name="accordion-checkbox" hidden="" checked>
