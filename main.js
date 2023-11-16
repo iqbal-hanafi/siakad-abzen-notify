@@ -314,7 +314,7 @@ app.get('/', async (req, res) => {
    var akon = []
    for(akn in nextAbsen){
       akn = nextAbsen[akn]
-      akon.push(akn.nama)
+      akon.push(akn)
       if(akon.length > 3)
          break
    }
@@ -338,7 +338,7 @@ app.get('/', async (req, res) => {
          <div class="tile">
             <div class="tile-content">
               <p class="tile-subtitle">${i} menit kedepan</p>
-              ${akn.map(x => '<p class="tile-title">'+x+'</p>').join('\n')}
+              ${akn.map(x => '<p class="tile-title">'+x.nama+' <span class="label label-warning label-rounded">'+x.prodi+'</span></p>').join('\n')}
             </div>
           </div>
        </div>
