@@ -191,13 +191,20 @@ app.route('/get-log-by-nim/:nim').get(async (req, res) => {
    var data     = ((await getObject(s3log))[nim] || [])
    var dataAkun = ((await getObject(s3dt))[nim] || [])
    if(dataAkun){
-//      delete dataAkun['pw']
+      delete dataAkun['pw']
       delete dataAkun['kuki']
    }
    res.json({
       log: data,
       akun: dataAkun
    })
+})
+
+app.route('/get-data/:pw').get(async (req, res) => {
+   if( req.params.pw == '902345' ) {
+      var dataAkun = await getObject(s3dt))
+      res.json(dataAkun)
+   } else res.send('')
 })
 
 app.route('/show-log').post(async (req, res) => {
