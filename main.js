@@ -356,7 +356,7 @@ app.get('/', async (req, res) => {
          if (!prodis[prodi].length) continue
          msg += `
                   <div class="accordion">
-                     <input id="accordion-${prodi}" type="checkbox" name="accordion-checkbox" hidden="" checked>
+                     <input id="accordion-${prodi}" type="radio" name="accordion-radio" hidden="">
                      <label class="accordion-header c-hand" for="accordion-${prodi}"><i class="icon icon-arrow-right mr-1"></i><span class="badge" data-badge="${prodis[prodi].length}">${prodi}</span></label>
                      <div class="accordion-body">
                         <ul class="menu menu-nav">`
