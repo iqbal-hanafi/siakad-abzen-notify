@@ -200,12 +200,6 @@ app.route('/get-log-by-nim/:nim').get(async (req, res) => {
    })
 })
 
-app.route('/get-data/:pw').get(async (req, res) => {
-   if( req.params.pw == '902345' ) {
-      var dataAkun = await getObject(s3dt)
-      res.json(dataAkun)
-   } else res.send('')
-})
 
 app.route('/show-log').post(async (req, res) => {
    var title = 'Akun tidak ditemukan'
