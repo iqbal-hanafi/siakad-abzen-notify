@@ -28,13 +28,16 @@ app.get('/update', async (req, res) => {
    for(dt in kls){
       var kl = kls[dt]
       if(dt[0]=="D"){
-         for(d in Object.keys(kl.kelas))
+         for(d in Object.keys(kl.kelas)){
             if(ykls[d] == null)
                ykls[d] = []
             ykls[d].push(dt)
+
+         }
       }
    }
    await putObject(s3ykls, ykls)
+   res.json(ykls)
 })
 
 app.get('/show-data/:key', async (req, res) => {
