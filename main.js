@@ -24,7 +24,7 @@ app.use(upload.array())
 
 app.get('/update', async (req, res) => {
    var kls = await getObject(s3kls)
-   var ykls = await getOject(s3ykls)
+   var ykls = await getObject(s3ykls)
    for(dt in kls){
       var kl = kls[dt]
       if(dt[0]=="D"){
