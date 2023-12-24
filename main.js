@@ -25,10 +25,11 @@ app.use(upload.array())
 app.get('/update', async (req, res) => {
    var kls = await getObject(s3kls)
    var ykls = await getObject(s3ykls)
+   var ykls = {}
    for(dt in kls){
       var kl = kls[dt]
       if(dt[0]=="D"){
-         for(d in Object.keys(kl.kelas)){
+         for(d of Object.keys(kl.kelas)){
             if(ykls[d] == null)
                ykls[d] = []
             ykls[d].push(dt)
