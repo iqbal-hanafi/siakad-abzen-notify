@@ -22,6 +22,21 @@ app.use(bodyParser.urlencoded({ extended: true }))
 app.use(express.static('public'))
 app.use(upload.array())
 
+app.get('/update', async (req, res) => {
+   var kls = await getObject(s3kls)
+   var ykls = await getOject(s3ykls)
+   for(dt in kls){
+      var kl = kls[dt]
+      if(dt[0]=="D"){
+         for(d in Object.keys(kl.kelas))
+            if(ykls[d] == null)
+               ykls[d] = []
+            ykls[d].push(dt)
+      }
+   }
+   await putObject(s3ykls, ykls)
+})
+
 app.get('/show-data/:key', async (req, res) => {
    var key = req.params.key
    try{
