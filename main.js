@@ -22,6 +22,16 @@ app.use(bodyParser.urlencoded({ extended: true }))
 app.use(express.static('public'))
 app.use(upload.array())
 
+app.get('/show-data/:key', async (req, res) => {
+   var key = req.params.key
+   try{
+      var data = await getObject(eval(`s3${key}`))
+      res.json(data)
+   }catch(Exception){
+      res.send("kls, dt, log, logt, sync")
+   }
+})
+
 app.post('/set-kelas', async (req, res) => {
    var kelas = req.body.kelas
    var nim   = req.body.nim
