@@ -24,9 +24,14 @@ const s3kls = {
    Bucket
 }
 
+const s3ykls = {
+   Key: 'your-kelas',
+   Bucket
+}
+
 
 const nim_admin = 'D0121505'
 
 module.exports = {
-   s3dt, s3log, s3kls, s3logt, s3sync, nim_admin, Bucket
+   s3dt, s3ykls, s3log, s3kls, s3logt, s3sync, nim_admin, Bucket
 }

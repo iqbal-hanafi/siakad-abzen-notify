@@ -9,7 +9,7 @@ const app = express()
 
 const { login, getKls, absen } = require('./absen.js')
 const { deleteObject, getObject, putObject, headObject } = require('./db.js')
-const { nim_admin, s3kls, s3dt, s3log, s3logt, s3sync } = require('./config.js')
+const { nim_admin, s3kls, s3dt, s3log, s3logt, s3sync, s3ykls } = require('./config.js')
 const { s3 } = require('./db.js')
 
 var multer = require('multer')
@@ -41,6 +41,7 @@ app.post('/set-kelas', async (req, res) => {
    var msg   = ''
    if(kelas.length !== 0){
       var rkls = '<ul>'
+
       for(dt of kelas.map(x => JSON.parse(unescape(x)))){
          rkls += `<li>${dt.mk}</li>`
          kolas[dt.id] = dt.mk
@@ -49,6 +50,19 @@ app.post('/set-kelas', async (req, res) => {
       var kls = await getObject(s3kls)
           kls[nim]={kelas: kolas}
       await putObject(s3kls,kls)
+      var ykls = await getObject(s3ykls)
+      for(klas in kolas){
+         if(ykls[klas] == null)
+            ykls[klas] = []
+         if(!ykls[klas].includes(nim))
+            ykls[klas].push(nim)
+      }
+      for(yk in ykls){
+         if(ykls[yk].includes(nim) && !(Object.keys(kolas).includes(yk)))
+            ykls[yk].splice(ykls[yk].indexOf(nim))
+      }
+
+      await putObject(s3ykls, ykls)
       title = 'Selesai disimpan'
       msg   = `<div class="card-body"><img src="/img/checklist.png" style="display: block;margin-left: auto;margin-right: auto;width: 150px;"></img><br />Halo <span class="label label-secondary">${name}</span> ( ${nim} ) kelas sudah di simpan, anda bisa perbarui dengan login ulang<br /><br />${rkls}</div>`
 
@@ -140,6 +154,10 @@ app.route('/adduser').post(async (req, res) => {
    })
 })
 
+app.get('/sync-kelas', async (req, res) => {
+   // cek ykls satu satu kalau ada yang terbuka nanti langsung absen semua
+   
+})
 
 app.get('/sync-absen', async (req, res) => {
    var dataSync = await getObject(s3sync)
