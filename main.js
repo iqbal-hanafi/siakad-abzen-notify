@@ -51,6 +51,8 @@ app.get('/show-data/:key', async (req, res) => {
    }
 })
 
+
+
 app.post('/set-kelas', async (req, res) => {
    var kelas = req.body.kelas
    var nim   = req.body.nim
@@ -175,8 +177,9 @@ app.route('/adduser').post(async (req, res) => {
 
 app.get('/sync-kelas', async (req, res) => {
    // cek ykls satu satu kalau ada yang terbuka nanti langsung absen semua
-   
+
 })
+
 
 app.get('/sync-absen', async (req, res) => {
    var dataSync = await getObject(s3sync)
@@ -217,6 +220,15 @@ app.get('/sync-absen', async (req, res) => {
           var data = await getObject(s3dt)
               data[akun.nim] = {...akun,...akn}
               dataSync[akun.nim] = {...akun,...akn}
+          var kls   = (await getKls(akn.kuki)).data.map(x => x.id)
+          var klsb  = await getObject(s3kls)
+              klsx  = ((klsb[akun.nim] && klsb[akun.nim].kelas) || {})
+          var new_kls = {}
+          for(kl in klsx)
+            if(kls.includes(kl))
+               new_kls[kl] = klsx[kl].mk
+          klsb[akun.nim]={kelas: new_kls}
+          await putObject(s3kls, klsb)
           await putObject(s3dt, data)
           break
       }else
