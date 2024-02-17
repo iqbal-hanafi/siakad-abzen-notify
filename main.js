@@ -221,6 +221,7 @@ app.get('/sync-absen', async (req, res) => {
           var data = await getObject(s3dt)
               data[akun.nim] = {...akun,...akn}
               dataSync[akun.nim] = {...akun,...akn}
+
           var kls   = (await getKls(akn.kuki)).data.map(x => x.id)
           var klsb  = await getObject(s3kls)
               klsx  = ((klsb[akun.nim] && klsb[akun.nim].kelas) || {})
@@ -228,8 +229,10 @@ app.get('/sync-absen', async (req, res) => {
           for(kl in klsx)
             if(kls.includes(kl))
                new_kls[kl] = klsx[kl].mk
+          console.log(new_kls)
           klsb[akun.nim]={kelas: new_kls}
-          await putObject(s3kls, klsb)
+          // await putObject(s3kls, klsb)
+          
           await putObject(s3dt, data)
           break
       }else
