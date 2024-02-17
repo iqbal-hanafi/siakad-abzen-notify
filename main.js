@@ -194,7 +194,7 @@ app.get('/sync-absen', async (req, res) => {
       var kls  = await getObject(s3kls)
           kls  = kls[akun.nim]
 
-      if(!kls || (kls.kelas == {})) continue
+      if(kls.kelas == {}) continue
 
       log = await absen(akun.kuki, kls.kelas)
 
